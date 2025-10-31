@@ -20,6 +20,7 @@ import { Categories } from '@/collections/Categories'
 import { Media } from '@/collections/Media'
 import { Pages } from '@/collections/Pages'
 import { Users } from '@/collections/Users'
+import { Materials } from '@/collections/Materials'
 import { Vendors } from '@/collections/Vendors'
 import { Footer } from '@/globals/Footer'
 import { Header } from '@/globals/Header'
@@ -40,7 +41,7 @@ export default buildConfig({
     },
     user: Users.slug,
   },
-  collections: [Users, Pages, Categories, Vendors, Media],
+  collections: [Users, Pages, Categories, Vendors, Materials, Media],
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URI || '',

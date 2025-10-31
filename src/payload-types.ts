@@ -76,6 +76,7 @@ export interface Config {
     pages: Page;
     categories: Category;
     vendors: Vendor;
+    materials: Material;
     media: Media;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -110,6 +111,7 @@ export interface Config {
     pages: PagesSelect<false> | PagesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     vendors: VendorsSelect<false> | VendorsSelect<true>;
+    materials: MaterialsSelect<false> | MaterialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1033,6 +1035,28 @@ export interface Vendor {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "materials".
+ */
+export interface Material {
+  id: number;
+  name: string;
+  /**
+   * JSON blob describing printer settings (e.g., {"nozzleTemp": 210})
+   */
+  config:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
@@ -1087,6 +1111,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'vendors';
         value: number | Vendor;
+      } | null)
+    | ({
+        relationTo: 'materials';
+        value: number | Material;
       } | null)
     | ({
         relationTo: 'media';
@@ -1395,6 +1423,16 @@ export interface CategoriesSelect<T extends boolean = true> {
 export interface VendorsSelect<T extends boolean = true> {
   name?: T;
   url?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "materials_select".
+ */
+export interface MaterialsSelect<T extends boolean = true> {
+  name?: T;
+  config?: T;
   updatedAt?: T;
   createdAt?: T;
 }
