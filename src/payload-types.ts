@@ -78,6 +78,7 @@ export interface Config {
     vendors: Vendor;
     materials: Material;
     colours: Colour;
+    filaments: Filament;
     media: Media;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -114,6 +115,7 @@ export interface Config {
     vendors: VendorsSelect<false> | VendorsSelect<true>;
     materials: MaterialsSelect<false> | MaterialsSelect<true>;
     colours: ColoursSelect<false> | ColoursSelect<true>;
+    filaments: FilamentsSelect<false> | FilamentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1080,6 +1082,43 @@ export interface Colour {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "filaments".
+ */
+export interface Filament {
+  id: number;
+  name: string;
+  material: number | Material;
+  vendor: number | Vendor;
+  colour: number | Colour;
+  /**
+   * JSON metadata such as spool weight, print profiles, etc.
+   */
+  config:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Track sourcing details per batch
+   */
+  purchases?:
+    | {
+        date: string;
+        url: string;
+        pricePerUnit: number;
+        unitsPurchased: number;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
@@ -1142,6 +1181,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'colours';
         value: number | Colour;
+      } | null)
+    | ({
+        relationTo: 'filaments';
+        value: number | Filament;
       } | null)
     | ({
         relationTo: 'media';
@@ -1475,6 +1518,28 @@ export interface ColoursSelect<T extends boolean = true> {
     | T
     | {
         hexcode?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "filaments_select".
+ */
+export interface FilamentsSelect<T extends boolean = true> {
+  name?: T;
+  material?: T;
+  vendor?: T;
+  colour?: T;
+  config?: T;
+  purchases?:
+    | T
+    | {
+        date?: T;
+        url?: T;
+        pricePerUnit?: T;
+        unitsPurchased?: T;
         id?: T;
       };
   updatedAt?: T;
