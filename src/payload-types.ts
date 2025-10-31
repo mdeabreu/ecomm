@@ -77,6 +77,7 @@ export interface Config {
     categories: Category;
     vendors: Vendor;
     materials: Material;
+    colours: Colour;
     media: Media;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -112,6 +113,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     vendors: VendorsSelect<false> | VendorsSelect<true>;
     materials: MaterialsSelect<false> | MaterialsSelect<true>;
+    colours: ColoursSelect<false> | ColoursSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1057,6 +1059,27 @@ export interface Material {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "colours".
+ */
+export interface Colour {
+  id: number;
+  name: string;
+  finish: 'regular' | 'matte' | 'silk';
+  type: 'solid' | 'co-extrusion' | 'gradient';
+  swatches?:
+    | {
+        /**
+         * Hex value including #, e.g. #FFAA00
+         */
+        hexcode: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
@@ -1115,6 +1138,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'materials';
         value: number | Material;
+      } | null)
+    | ({
+        relationTo: 'colours';
+        value: number | Colour;
       } | null)
     | ({
         relationTo: 'media';
@@ -1433,6 +1460,23 @@ export interface VendorsSelect<T extends boolean = true> {
 export interface MaterialsSelect<T extends boolean = true> {
   name?: T;
   config?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "colours_select".
+ */
+export interface ColoursSelect<T extends boolean = true> {
+  name?: T;
+  finish?: T;
+  type?: T;
+  swatches?:
+    | T
+    | {
+        hexcode?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
