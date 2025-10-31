@@ -75,6 +75,7 @@ export interface Config {
     users: User;
     pages: Page;
     categories: Category;
+    vendors: Vendor;
     media: Media;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -108,6 +109,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    vendors: VendorsSelect<false> | VendorsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1017,6 +1019,20 @@ export interface Address {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vendors".
+ */
+export interface Vendor {
+  id: number;
+  name: string;
+  /**
+   * Public storefront or vendor URL
+   */
+  url: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
@@ -1067,6 +1083,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'categories';
         value: number | Category;
+      } | null)
+    | ({
+        relationTo: 'vendors';
+        value: number | Vendor;
       } | null)
     | ({
         relationTo: 'media';
@@ -1365,6 +1385,16 @@ export interface CategoriesSelect<T extends boolean = true> {
   title?: T;
   generateSlug?: T;
   slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "vendors_select".
+ */
+export interface VendorsSelect<T extends boolean = true> {
+  name?: T;
+  url?: T;
   updatedAt?: T;
   createdAt?: T;
 }
