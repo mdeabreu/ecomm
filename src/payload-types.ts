@@ -1058,6 +1058,10 @@ export interface Material {
     | number
     | boolean
     | null;
+  /**
+   * Optional override; fallback is the Settings price per gram
+   */
+  pricePerGram?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1505,6 +1509,7 @@ export interface VendorsSelect<T extends boolean = true> {
 export interface MaterialsSelect<T extends boolean = true> {
   name?: T;
   config?: T;
+  pricePerGram?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2017,6 +2022,10 @@ export interface Footer {
 export interface Setting {
   id: number;
   /**
+   * Baseline price per gram used when a material does not override it
+   */
+  pricePerGram: number;
+  /**
    * Default printer machine settings JSON
    */
   machine:
@@ -2106,6 +2115,7 @@ export interface FooterSelect<T extends boolean = true> {
  * via the `definition` "settings_select".
  */
 export interface SettingsSelect<T extends boolean = true> {
+  pricePerGram?: T;
   machine?: T;
   process?: T;
   filament?: T;

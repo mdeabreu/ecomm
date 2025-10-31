@@ -31,5 +31,13 @@ export const Materials: CollectionConfig = {
         description: 'JSON blob describing printer settings (e.g., {"nozzleTemp": 210})',
       },
     },
+    {
+      name: 'pricePerGram',
+      type: 'number',
+      min: 0,
+      admin: {
+        description: 'Optional override; fallback is the Settings price per gram',
+      },
+    },
   ],
 }
