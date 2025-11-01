@@ -15,6 +15,7 @@ We rely on TypeScript, React server components by default, and Tailwind for styl
 
 ## Testing Guidelines
 Vitest specs in `tests/int` follow the `*.int.spec.ts` suffix and should validate API handlers or server utilities. E2E Playwright suites live in `tests/e2e`, but defer running or extending them until instructed; draft scenarios locally and sync with the team before pushing. When adding features, include at least one integration spec and seed reproducible data through Payload scripts where needed.
+Keep `src/endpoints/seed/index.ts` aligned with schema changes so local seeds expose new collections and fields for reviewers.
 
 ## Commit & Pull Request Guidelines
 Use Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) with present-tense subjects (`feat: add cart reconciliation`). Rebase prior to opening PRs and reserve commit bodies for context or breaking changes. PRs must link issues, summarize user impact, and call out migrations or seeds. Attach screenshots or short clips for UI updates, confirm linting and integration tests, and document any manual steps for reviewers.

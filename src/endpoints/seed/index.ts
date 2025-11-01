@@ -25,6 +25,10 @@ const collections: CollectionSlug[] = [
   'transactions',
   'addresses',
   'orders',
+  'vendors',
+  'materials',
+  'colours',
+  'filaments',
 ]
 
 const categories = ['Accessories', 'T-Shirts', 'Hats']
@@ -41,7 +45,7 @@ const colorVariantOptions = [
   { label: 'White', value: 'white' },
 ]
 
-const globals: GlobalSlug[] = ['header', 'footer']
+const globals: GlobalSlug[] = ['header', 'footer', 'settings']
 
 const baseAddressUSData: Transaction['billingAddress'] = {
   title: 'Dr.',
@@ -89,18 +93,28 @@ export const seed = async ({
 
   // clear the database
   await Promise.all(
-    globals.map((global) =>
-      payload.updateGlobal({
+    globals.map((global) => {
+      const data =
+        global === 'settings'
+          ? {
+              pricePerGram: 0,
+              machine: {},
+              process: {},
+              filament: {},
+            }
+          : {
+              navItems: [],
+            }
+
+      return payload.updateGlobal({
         slug: global,
-        data: {
-          navItems: [],
-        },
+        data,
         depth: 0,
         context: {
           disableRevalidate: true,
         },
-      }),
-    ),
+      })
+    }),
   )
 
   for (const collection of collections) {
@@ -189,6 +203,120 @@ export const seed = async ({
       }),
     ),
   ])
+
+  payload.logger.info(`— Seeding 3D printing catalog...`)
+
+  const [vendorPrusa, vendorPolymaker] = await Promise.all([
+    payload.create({
+      collection: 'vendors',
+      data: {
+        name: 'Prusa Polymers',
+        url: 'https://www.prusa3d.com',
+      },
+    }),
+    payload.create({
+      collection: 'vendors',
+      data: {
+        name: 'Polymaker',
+        url: 'https://www.polymaker.com',
+      },
+    }),
+  ])
+
+  const [materialPlaPlus, materialPetg] = await Promise.all([
+    payload.create({
+      collection: 'materials',
+      data: {
+        name: 'PLA+',
+        config: {
+          nozzleTemp: 210,
+          bedTemp: 60,
+          notes: 'Strong everyday filament with low warp.',
+        },
+        pricePerGram: 0.05,
+      },
+    }),
+    payload.create({
+      collection: 'materials',
+      data: {
+        name: 'PETG',
+        config: {
+          nozzleTemp: 240,
+          bedTemp: 80,
+          notes: 'Great for durable, water-resistant parts.',
+        },
+        pricePerGram: 0.065,
+      },
+    }),
+  ])
+
+  const [colourGalaxyBlack, colourArcticWhite] = await Promise.all([
+    payload.create({
+      collection: 'colours',
+      data: {
+        name: 'Galaxy Black',
+        finish: 'silk',
+        type: 'gradient',
+        swatches: [
+          { hexcode: '#0B0B2A' },
+          { hexcode: '#2D2D5C' },
+        ],
+      },
+    }),
+    payload.create({
+      collection: 'colours',
+      data: {
+        name: 'Arctic White',
+        finish: 'matte',
+        type: 'solid',
+        swatches: [{ hexcode: '#F7F7F8' }],
+      },
+    }),
+  ])
+
+  await payload.create({
+    collection: 'filaments',
+    data: {
+      name: 'PLA+ Galaxy Black Spool',
+      material: materialPlaPlus.id,
+      vendor: vendorPrusa.id,
+      colour: colourGalaxyBlack.id,
+      config: {
+        diameter: 1.75,
+        spoolWeightGrams: 1000,
+      },
+      purchases: [
+        {
+          date: new Date('2024-02-01T00:00:00.000Z').toISOString(),
+          url: 'https://store.prusa3d.com/en/pla/1158-prusament-pla-galaxy-black-1kg.html',
+          pricePerUnit: 29.99,
+          unitsPurchased: 1,
+        },
+      ],
+    },
+  })
+
+  await payload.create({
+    collection: 'filaments',
+    data: {
+      name: 'PETG Arctic White Spool',
+      material: materialPetg.id,
+      vendor: vendorPolymaker.id,
+      colour: colourArcticWhite.id,
+      config: {
+        diameter: 1.75,
+        spoolWeightGrams: 750,
+      },
+      purchases: [
+        {
+          date: new Date('2024-03-12T00:00:00.000Z').toISOString(),
+          url: 'https://polymaker.com/product/polylite-petg-arctic-white/',
+          pricePerUnit: 34.5,
+          unitsPurchased: 2,
+        },
+      ],
+    },
+  })
 
   payload.logger.info(`— Seeding variant types and options...`)
 
@@ -576,6 +704,25 @@ export const seed = async ({
             },
           },
         ],
+      },
+    }),
+    payload.updateGlobal({
+      slug: 'settings',
+      data: {
+        pricePerGram: 0.045,
+        machine: {
+          defaultPrinter: 'Prusa MK4',
+          nozzleDiameter: 0.4,
+        },
+        process: {
+          layerHeight: 0.2,
+          infill: '20%',
+          supports: 'tree',
+        },
+        filament: {
+          storage: 'Dry box at 30% RH',
+          purgeLengthMm: 100,
+        },
       },
     }),
   ])
