@@ -25,10 +25,10 @@ const collections: CollectionSlug[] = [
   'transactions',
   'addresses',
   'orders',
+  'filaments',
   'vendors',
   'materials',
   'colours',
-  'filaments',
 ]
 
 const categories = ['Accessories', 'T-Shirts', 'Hats']
