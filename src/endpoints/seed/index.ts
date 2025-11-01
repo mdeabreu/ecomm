@@ -28,6 +28,7 @@ const collections: CollectionSlug[] = [
   'filaments',
   'vendors',
   'materials',
+  'processes',
   'colours',
 ]
 
@@ -246,6 +247,33 @@ export const seed = async ({
           notes: 'Great for durable, water-resistant parts.',
         },
         pricePerGram: 0.065,
+      },
+    }),
+  ])
+
+  const [processDraft, processFunctional] = await Promise.all([
+    payload.create({
+      collection: 'processes',
+      data: {
+        name: 'Draft Print',
+        config: {
+          layerHeight: 0.28,
+          infill: '10%',
+          supports: 'none',
+          notes: 'Fast prototyping profile for dimension checks.',
+        },
+      },
+    }),
+    payload.create({
+      collection: 'processes',
+      data: {
+        name: 'Functional Part',
+        config: {
+          layerHeight: 0.16,
+          infill: '35%',
+          supports: 'tree',
+          notes: 'Balanced strength and surface finish for end-use prints.',
+        },
       },
     }),
   ])

@@ -77,6 +77,7 @@ export interface Config {
     categories: Category;
     vendors: Vendor;
     materials: Material;
+    processes: Process;
     colours: Colour;
     filaments: Filament;
     media: Media;
@@ -114,6 +115,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     vendors: VendorsSelect<false> | VendorsSelect<true>;
     materials: MaterialsSelect<false> | MaterialsSelect<true>;
+    processes: ProcessesSelect<false> | ProcessesSelect<true>;
     colours: ColoursSelect<false> | ColoursSelect<true>;
     filaments: FilamentsSelect<false> | FilamentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -1067,6 +1069,28 @@ export interface Material {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "processes".
+ */
+export interface Process {
+  id: number;
+  name: string;
+  /**
+   * JSON definition for slicer settings or workflow steps
+   */
+  config:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "colours".
  */
 export interface Colour {
@@ -1183,6 +1207,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'materials';
         value: number | Material;
+      } | null)
+    | ({
+        relationTo: 'processes';
+        value: number | Process;
       } | null)
     | ({
         relationTo: 'colours';
@@ -1510,6 +1538,16 @@ export interface MaterialsSelect<T extends boolean = true> {
   name?: T;
   config?: T;
   pricePerGram?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "processes_select".
+ */
+export interface ProcessesSelect<T extends boolean = true> {
+  name?: T;
+  config?: T;
   updatedAt?: T;
   createdAt?: T;
 }
