@@ -363,16 +363,12 @@ export const seed = async ({
   await Promise.all([
     payload.create({
       collection: 'models',
-      data: {
-        name: '3DBenchy',
-      },
+      data: {},
       file: benchyFile,
     }),
     payload.create({
       collection: 'models',
-      data: {
-        name: 'CaliCat',
-      },
+      data: {},
       file: calicatFile,
     }),
   ])
