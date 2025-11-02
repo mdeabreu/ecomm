@@ -306,6 +306,7 @@ export const seed = async ({
     collection: 'filaments',
     data: {
       name: 'PLA+ Galaxy Black Spool',
+      active: true,
       material: materialPlaPlus.id,
       vendor: vendorPrusa.id,
       colour: colourGalaxyBlack.id,
@@ -328,6 +329,7 @@ export const seed = async ({
     collection: 'filaments',
     data: {
       name: 'PETG Arctic White Spool',
+      active: true,
       material: materialPetg.id,
       vendor: vendorPolymaker.id,
       colour: colourArcticWhite.id,

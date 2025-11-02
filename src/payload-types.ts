@@ -1117,6 +1117,10 @@ export interface Colour {
 export interface Filament {
   id: number;
   name: string;
+  /**
+   * Uncheck to hide this filament from customer-facing selectors
+   */
+  active: boolean;
   material: number | Material;
   vendor: number | Vendor;
   colour: number | Colour;
@@ -1574,6 +1578,7 @@ export interface ColoursSelect<T extends boolean = true> {
  */
 export interface FilamentsSelect<T extends boolean = true> {
   name?: T;
+  active?: T;
   material?: T;
   vendor?: T;
   colour?: T;

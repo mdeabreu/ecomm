@@ -1,5 +1,5 @@
 import { ColourSwatch } from '@/components/colour/ColourSwatch'
-import type { Colour } from '@/payload-types'
+import type { Colour, Filament } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -11,14 +11,49 @@ export const metadata = {
 export default async function ColoursPage() {
   const payload = await getPayload({ config: configPromise })
 
-  const colourResults = await payload.find({
-    collection: 'colours',
+  const filamentResults = await payload.find({
+    collection: 'filaments',
     depth: 0,
-    limit: 200,
+    limit: 500,
     overrideAccess: false,
-    sort: 'name',
+    select: {
+      colour: true,
+      active: true,
+    },
+    where: {
+      active: {
+        equals: true,
+      },
+    },
   })
-  const colours = colourResults.docs as Colour[]
+
+  const activeColourIds = new Set<string | number>()
+  ;(filamentResults.docs as Filament[]).forEach((filament) => {
+    const colourRef = filament.colour
+    if (typeof colourRef === 'object' && colourRef !== null) {
+      activeColourIds.add(colourRef.id)
+    } else if (colourRef) {
+      activeColourIds.add(colourRef)
+    }
+  })
+
+  let colours: Colour[] = []
+
+  if (activeColourIds.size > 0) {
+    const colourResults = await payload.find({
+      collection: 'colours',
+      depth: 0,
+      limit: 200,
+      overrideAccess: false,
+      sort: 'name',
+      where: {
+        id: {
+          in: Array.from(activeColourIds),
+        },
+      },
+    })
+    colours = colourResults.docs as Colour[]
+  }
 
   return (
     <div className="container py-10 md:py-16">
