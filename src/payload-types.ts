@@ -80,6 +80,7 @@ export interface Config {
     processes: Process;
     colours: Colour;
     filaments: Filament;
+    models: Model;
     media: Media;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -118,6 +119,7 @@ export interface Config {
     processes: ProcessesSelect<false> | ProcessesSelect<true>;
     colours: ColoursSelect<false> | ColoursSelect<true>;
     filaments: FilamentsSelect<false> | FilamentsSelect<true>;
+    models: ModelsSelect<false> | ModelsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1153,6 +1155,25 @@ export interface Filament {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "models".
+ */
+export interface Model {
+  id: number;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
@@ -1223,6 +1244,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'filaments';
         value: number | Filament;
+      } | null)
+    | ({
+        relationTo: 'models';
+        value: number | Model;
       } | null)
     | ({
         relationTo: 'media';
@@ -1594,6 +1619,24 @@ export interface FilamentsSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "models_select".
+ */
+export interface ModelsSelect<T extends boolean = true> {
+  name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

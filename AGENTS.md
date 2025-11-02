@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-The app uses the Next.js App Router under `src/app`; customer-facing routes reside in `src/app/(app)` (e.g., the new `colours` catalogue page) and Payload admin tooling in `src/app/(payload)`. Shared UI sits in `src/components`, while Payload definitions live in `src/collections`, `src/blocks`, and `src/fields`. Business logic extends across `src/lib`, `src/hooks`, and `src/providers`. Payload config and generated types are in `src/payload.config.ts` and adjacent files, with fonts and other static assets in `src/fonts`. Tests land in `tests/int` (Vitest) and `tests/e2e` (Playwright). Review `ai-ref/` for quick-start notes on interacting with PayloadCMS; `ai-ref/reference` covers core workflows and schemas.
+The app uses the Next.js App Router under `src/app`; customer-facing routes reside in `src/app/(app)` (e.g., the new `colours` catalogue page) and Payload admin tooling in `src/app/(payload)`. Shared UI sits in `src/components`, while Payload definitions live in `src/collections`, `src/blocks`, and `src/fields`. Business logic extends across `src/lib`, `src/hooks`, and `src/providers`. Payload config and generated types are in `src/payload.config.ts` and adjacent files, with fonts and other static assets in `src/fonts`. Model uploads stream through `src/collections/Models.ts` into `public/models`. Tests land in `tests/int` (Vitest) and `tests/e2e` (Playwright). Review `ai-ref/` for quick-start notes on interacting with PayloadCMS; `ai-ref/reference` covers core workflows and schemas.
 
 ## Build, Test, and Development Commands
 - `pnpm dev` starts the app with hot reload at `localhost:3000`.
@@ -15,7 +15,7 @@ We rely on TypeScript, React server components by default, and Tailwind for styl
 
 ## Testing Guidelines
 Vitest specs in `tests/int` follow the `*.int.spec.ts` suffix and should validate API handlers or server utilities. E2E Playwright suites live in `tests/e2e`, but defer running or extending them until instructed; draft scenarios locally and sync with the team before pushing. When adding features, include at least one integration spec and seed reproducible data through Payload scripts where needed.
-Keep `src/endpoints/seed/index.ts` aligned with schema changes so local seeds expose new collections and fields for reviewers.
+Keep `src/endpoints/seed/index.ts` aligned with schema changes so local seeds expose new collections (filaments, models, colours, etc.) and fields for reviewers.
 
 ## Commit & Pull Request Guidelines
 Use Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) with present-tense subjects (`feat: add cart reconciliation`). Rebase prior to opening PRs and reserve commit bodies for context or breaking changes. PRs must link issues, summarize user impact, and call out migrations or seeds. Attach screenshots or short clips for UI updates, confirm linting and integration tests, and document any manual steps for reviewers.

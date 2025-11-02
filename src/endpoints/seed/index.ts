@@ -1,5 +1,9 @@
 import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
 
+import fs from 'fs/promises'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
 import { contactFormData } from './contact-form'
 import { contactPageData } from './contact-page'
 import { productHatData } from './product-hat'
@@ -10,6 +14,8 @@ import { imageTshirtBlackData } from './image-tshirt-black'
 import { imageTshirtWhiteData } from './image-tshirt-white'
 import { imageHero1Data } from './image-hero-1'
 import { Address, Transaction, VariantOption } from '@/payload-types'
+
+const seedDir = path.dirname(fileURLToPath(import.meta.url))
 
 const collections: CollectionSlug[] = [
   'categories',
@@ -30,6 +36,7 @@ const collections: CollectionSlug[] = [
   'materials',
   'processes',
   'colours',
+  'models',
 ]
 
 const categories = ['Accessories', 'T-Shirts', 'Hats']
@@ -347,6 +354,28 @@ export const seed = async ({
       ],
     },
   })
+
+  const [benchyFile, calicatFile] = await Promise.all([
+    readSeedFile('3dbenchy.stl', 'model/stl'),
+    readSeedFile('calicat.stl', 'model/stl'),
+  ])
+
+  await Promise.all([
+    payload.create({
+      collection: 'models',
+      data: {
+        name: '3DBenchy',
+      },
+      file: benchyFile,
+    }),
+    payload.create({
+      collection: 'models',
+      data: {
+        name: 'CaliCat',
+      },
+      file: calicatFile,
+    }),
+  ])
 
   payload.logger.info(`— Seeding variant types and options...`)
 
@@ -776,6 +805,18 @@ async function fetchFileByURL(url: string): Promise<File> {
     name: url.split('/').pop() || `file-${Date.now()}`,
     data: Buffer.from(data),
     mimetype: `image/${url.split('.').pop()}`,
+    size: data.byteLength,
+  }
+}
+
+async function readSeedFile(filename: string, mimetype: string): Promise<File> {
+  const filePath = path.resolve(seedDir, filename)
+  const data = await fs.readFile(filePath)
+
+  return {
+    name: filename,
+    data,
+    mimetype,
     size: data.byteLength,
   }
 }
