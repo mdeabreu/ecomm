@@ -4,7 +4,8 @@ import path from 'path'
 import { randomUUID } from 'node:crypto'
 import { fileURLToPath } from 'url'
 
-import { adminOnly } from '@/access/adminOnly'
+import { adminOrCustomerOwner } from '@/access/adminOrCustomerOwner'
+import { publicAccess } from '@/access/publicAccess'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -16,13 +17,13 @@ export const Models: CollectionConfig = {
     singular: 'Model',
   },
   access: {
-    create: adminOnly,
-    delete: adminOnly,
-    read: () => true,
-    update: adminOnly,
+    create: publicAccess,
+    delete: adminOrCustomerOwner,
+    read: adminOrCustomerOwner,
+    update: adminOrCustomerOwner,
   },
   admin: {
-    defaultColumns: ['originalFilename', 'filename'],
+    defaultColumns: ['originalFilename', 'filename', 'customer'],
     group: '3D Printing',
     useAsTitle: 'originalFilename',
   },
@@ -34,11 +35,19 @@ export const Models: CollectionConfig = {
         readOnly: true,
       },
     },
+    {
+      name: 'customer',
+      type: 'relationship',
+      relationTo: 'users',
+      required: true,
+    },
   ],
   hooks: {
     beforeOperation: [
       ({ args, operation, req }) => {
-        if ((operation == 'create' || operation == 'update') && req.file) {
+        if ((operation === 'create' || operation === 'update') && req.file) {
+          args.data ||= {}
+
           args.data.originalFilename = req.file.name
 
           const parsed = path.parse(req.file.name)
@@ -53,6 +62,14 @@ export const Models: CollectionConfig = {
 
           req.file.name = uniqueFilename
         }
+      },
+    ],
+    beforeChange: [
+      ({ data, operation, req }) => {
+        if ((operation === 'create' || operation === 'update') && req.user) {
+          data.customer ??= req.user.id
+        }
+        return data
       },
     ],
   },

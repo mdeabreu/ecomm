@@ -1160,6 +1160,7 @@ export interface Filament {
 export interface Model {
   id: number;
   originalFilename?: string | null;
+  customer: number | User;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1626,6 +1627,7 @@ export interface FilamentsSelect<T extends boolean = true> {
  */
 export interface ModelsSelect<T extends boolean = true> {
   originalFilename?: T;
+  customer?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
