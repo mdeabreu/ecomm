@@ -41,6 +41,6 @@ next-env.d.ts
 
 public/media
 
-# database
-ecomm.db
+# data
+data/
 

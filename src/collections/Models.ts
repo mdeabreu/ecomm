@@ -34,7 +34,7 @@ export const Models: CollectionConfig = {
     },
   ],
   upload: {
-    staticDir: path.resolve(dirname, '../../public/models'),
+    staticDir: path.resolve(dirname, '../../data/models'),
     mimeTypes: ['model/stl', 'application/sla', 'application/octet-stream'],
   },
 }
