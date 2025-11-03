@@ -39,5 +39,14 @@ export const Materials: CollectionConfig = {
         description: 'Optional override; fallback is the Settings price per gram',
       },
     },
+    {
+      name: 'filaments',
+      type: 'join',
+      collection: 'filaments',
+      on: 'material',
+      admin: {
+        defaultColumns: ['name', 'active'],
+      },
+    },
   ],
 }

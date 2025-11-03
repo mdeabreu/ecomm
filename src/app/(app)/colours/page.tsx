@@ -11,49 +11,18 @@ export const metadata = {
 export default async function ColoursPage() {
   const payload = await getPayload({ config: configPromise })
 
-  const filamentResults = await payload.find({
-    collection: 'filaments',
-    depth: 0,
-    limit: 500,
+  const colours = await payload.find({
+    collection: 'colours',
+    depth: 1,
+    limit: 200,
     overrideAccess: false,
-    select: {
-      colour: true,
-      active: true,
-    },
+    sort: 'name',
     where: {
-      active: {
-        equals: true,
-      },
-    },
-  })
-
-  const activeColourIds = new Set<string | number>()
-  ;(filamentResults.docs as Filament[]).forEach((filament) => {
-    const colourRef = filament.colour
-    if (typeof colourRef === 'object' && colourRef !== null) {
-      activeColourIds.add(colourRef.id)
-    } else if (colourRef) {
-      activeColourIds.add(colourRef)
+      'filaments.active': {
+          equals: true,
+      }
     }
   })
-
-  let colours: Colour[] = []
-
-  if (activeColourIds.size > 0) {
-    const colourResults = await payload.find({
-      collection: 'colours',
-      depth: 0,
-      limit: 200,
-      overrideAccess: false,
-      sort: 'name',
-      where: {
-        id: {
-          in: Array.from(activeColourIds),
-        },
-      },
-    })
-    colours = colourResults.docs as Colour[]
-  }
 
   return (
     <div className="container py-10 md:py-16">
@@ -66,8 +35,8 @@ export default async function ColoursPage() {
       </header>
 
       <section className="mt-10 grid gap-6 md:grid-cols-2">
-        {colours.length ? (
-          colours.map((colour) => (
+        {colours.docs.length ? (
+          colours.docs.map((colour) => (
             <ColourSwatch
               key={colour.id}
               finish={colour.finish}

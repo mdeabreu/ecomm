@@ -103,6 +103,12 @@ export interface Config {
       cart: 'carts';
       addresses: 'addresses';
     };
+    materials: {
+      filaments: 'filaments';
+    };
+    colours: {
+      filaments: 'filaments';
+    };
     variantTypes: {
       options: 'variantOptions';
     };
@@ -1066,49 +1072,11 @@ export interface Material {
    * Optional override; fallback is the Settings price per gram
    */
   pricePerGram?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "processes".
- */
-export interface Process {
-  id: number;
-  name: string;
-  /**
-   * JSON definition for slicer settings or workflow steps
-   */
-  config:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "colours".
- */
-export interface Colour {
-  id: number;
-  name: string;
-  finish: 'regular' | 'matte' | 'silk';
-  type: 'solid' | 'co-extrusion' | 'gradient';
-  swatches?:
-    | {
-        /**
-         * Hex value including #, e.g. #FFAA00
-         */
-        hexcode: string;
-        id?: string | null;
-      }[]
-    | null;
+  filaments?: {
+    docs?: (number | Filament)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1149,6 +1117,54 @@ export interface Filament {
         unitsPurchased: number;
         id?: string | null;
       }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "colours".
+ */
+export interface Colour {
+  id: number;
+  name: string;
+  finish: 'regular' | 'matte' | 'silk';
+  type: 'solid' | 'co-extrusion' | 'gradient';
+  swatches?:
+    | {
+        /**
+         * Hex value including #, e.g. #FFAA00
+         */
+        hexcode: string;
+        id?: string | null;
+      }[]
+    | null;
+  filaments?: {
+    docs?: (number | Filament)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "processes".
+ */
+export interface Process {
+  id: number;
+  name: string;
+  /**
+   * JSON definition for slicer settings or workflow steps
+   */
+  config:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
     | null;
   updatedAt: string;
   createdAt: string;
@@ -1568,6 +1584,7 @@ export interface MaterialsSelect<T extends boolean = true> {
   name?: T;
   config?: T;
   pricePerGram?: T;
+  filaments?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1595,6 +1612,7 @@ export interface ColoursSelect<T extends boolean = true> {
         hexcode?: T;
         id?: T;
       };
+  filaments?: T;
   updatedAt?: T;
   createdAt?: T;
 }

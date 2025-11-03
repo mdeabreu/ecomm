@@ -70,5 +70,14 @@ export const Colours: CollectionConfig = {
         },
       ],
     },
+    {
+      name: 'filaments',
+      type: 'join',
+      collection: 'filaments',
+      on: 'colour',
+      admin: {
+        defaultColumns: ['name', 'active'],
+      },
+    },
   ],
 }
