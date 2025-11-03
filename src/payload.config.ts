@@ -20,6 +20,7 @@ import { Categories } from '@/collections/Categories'
 import { Colours } from '@/collections/Colours'
 import { Filaments } from '@/collections/Filaments'
 import { Models } from '@/collections/Models'
+import { Quotes } from '@/collections/Quotes'
 import { Media } from '@/collections/Media'
 import { Pages } from '@/collections/Pages'
 import { Users } from '@/collections/Users'
@@ -56,6 +57,7 @@ export default buildConfig({
     Colours,
     Filaments,
     Models,
+    Quotes,
     Media,
   ],
   db: sqliteAdapter({

@@ -39,7 +39,6 @@ export const Models: CollectionConfig = {
       name: 'customer',
       type: 'relationship',
       relationTo: 'users',
-      required: true,
     },
   ],
   hooks: {

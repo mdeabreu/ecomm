@@ -23,6 +23,16 @@ export const Processes: CollectionConfig = {
       unique: true,
     },
     {
+      name: 'active',
+      type: 'checkbox',
+      defaultValue: true,
+      required: true,
+      admin: {
+        description: 'Uncheck to hide this filament from customer-facing selectors',
+        position: 'sidebar',
+      },
+    },
+    {
       name: 'config',
       type: 'json',
       defaultValue: {},

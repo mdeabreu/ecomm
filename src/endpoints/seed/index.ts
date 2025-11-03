@@ -31,6 +31,7 @@ const collections: CollectionSlug[] = [
   'transactions',
   'addresses',
   'orders',
+  'quotes',
   'filaments',
   'vendors',
   'materials',
@@ -360,7 +361,7 @@ export const seed = async ({
     readSeedFile('calicat.stl', 'model/stl'),
   ])
 
-  await Promise.all([
+  const [modelBenchy, modelCalicat] = await Promise.all([
     payload.create({
       collection: 'models',
       data: {
@@ -376,6 +377,20 @@ export const seed = async ({
       file: calicatFile,
     }),
   ])
+
+  await payload.create({
+    collection: 'quotes',
+    data: {
+      customer: customer.id,
+      models: [modelBenchy.id, modelCalicat.id],
+      material: materialPlaPlus.id,
+      colour: colourGalaxyBlack.id,
+      process: processFunctional.id,
+      filament: null,
+      price: 0,
+      status: 'new',
+    },
+  })
 
   payload.logger.info(`— Seeding variant types and options...`)
 

@@ -81,6 +81,7 @@ export interface Config {
     colours: Colour;
     filaments: Filament;
     models: Model;
+    quotes: Quote;
     media: Media;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -126,6 +127,7 @@ export interface Config {
     colours: ColoursSelect<false> | ColoursSelect<true>;
     filaments: FilamentsSelect<false> | FilamentsSelect<true>;
     models: ModelsSelect<false> | ModelsSelect<true>;
+    quotes: QuotesSelect<false> | QuotesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -1155,6 +1157,10 @@ export interface Process {
   id: number;
   name: string;
   /**
+   * Uncheck to hide this filament from customer-facing selectors
+   */
+  active: boolean;
+  /**
    * JSON definition for slicer settings or workflow steps
    */
   config:
@@ -1176,7 +1182,7 @@ export interface Process {
 export interface Model {
   id: number;
   originalFilename?: string | null;
-  customer: number | User;
+  customer?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -1188,6 +1194,23 @@ export interface Model {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes".
+ */
+export interface Quote {
+  id: number;
+  customer?: (number | null) | User;
+  models: (number | Model)[];
+  material: number | Material;
+  colour: number | Colour;
+  process: number | Process;
+  filament?: (number | null) | Filament;
+  status: 'new' | 'reviewing' | 'quoted' | 'approved' | 'rejected';
+  price?: number | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1265,6 +1288,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'models';
         value: number | Model;
+      } | null)
+    | ({
+        relationTo: 'quotes';
+        value: number | Quote;
       } | null)
     | ({
         relationTo: 'media';
@@ -1594,6 +1621,7 @@ export interface MaterialsSelect<T extends boolean = true> {
  */
 export interface ProcessesSelect<T extends boolean = true> {
   name?: T;
+  active?: T;
   config?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1657,6 +1685,22 @@ export interface ModelsSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quotes_select".
+ */
+export interface QuotesSelect<T extends boolean = true> {
+  customer?: T;
+  models?: T;
+  material?: T;
+  colour?: T;
+  process?: T;
+  filament?: T;
+  status?: T;
+  price?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
