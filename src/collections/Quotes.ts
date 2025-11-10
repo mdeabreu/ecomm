@@ -272,10 +272,15 @@ export const Quotes: CollectionConfig = {
           data.customerEmail ??
           (typeof originalDoc?.customerEmail === 'string' ? originalDoc.customerEmail : undefined)
 
+        const existingCustomer =
+          resolveRelationID(data.customer) ?? resolveRelationID(originalDoc?.customer)
+
         if (req.user) {
           data.customer = req.user.id
-        } else if (!existingEmail) {
+        } else if (!existingCustomer && !existingEmail) {
           throw new Error('Please include a contact email so we can follow up about your quote.')
+        } else if (existingCustomer) {
+          data.customer = existingCustomer
         }
 
         if (Array.isArray(data.items) && data.items.length > 0) {
