@@ -33,76 +33,125 @@ export const Filaments: CollectionConfig = {
       },
     },
     {
-      name: 'material',
-      type: 'relationship',
-      relationTo: 'materials',
-      required: true,
+      type: 'row',
+      fields: [
+        {
+          name: 'material',
+          type: 'relationship',
+          relationTo: 'materials',
+          required: true,
+          admin: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'vendor',
+          type: 'relationship',
+          relationTo: 'vendors',
+          required: true,
+          admin: {
+            width: '33%',
+          },
+        },
+        {
+          name: 'colour',
+          type: 'relationship',
+          relationTo: 'colours',
+          required: true,
+          admin: {
+            width: '34%',
+          },
+        },
+      ],
     },
     {
-      name: 'vendor',
-      type: 'relationship',
-      relationTo: 'vendors',
-      required: true,
-    },
-    {
-      name: 'colour',
-      type: 'relationship',
-      relationTo: 'colours',
-      required: true,
-    },
-    {
-      name: 'config',
-      type: 'json',
-      defaultValue: {},
-      required: true,
+      type: 'collapsible',
+      label: 'Filament configuration',
       admin: {
-        description: 'JSON metadata such as spool weight, print profiles, etc.',
-      },
-    },
-    {
-      name: 'purchases',
-      type: 'array',
-      labels: {
-        plural: 'Purchases',
-        singular: 'Purchase',
-      },
-      admin: {
-        description: 'Track sourcing details per batch',
+        initCollapsed: true,
       },
       fields: [
         {
-          name: 'date',
-          type: 'date',
-          required: true,
-        },
-        {
-          name: 'url',
-          type: 'text',
+          name: 'config',
+          type: 'json',
+          defaultValue: {},
           required: true,
           admin: {
-            width: '50%',
-          },
-          validate: (value) => {
-            if (!value) return 'URL is required'
-            try {
-              new URL(value)
-              return true
-            } catch {
-              return 'Enter a valid purchase URL'
-            }
+            description: 'JSON metadata such as spool weight, print profiles, etc.',
           },
         },
+      ],
+    },
+    {
+      type: 'collapsible',
+      label: 'Purchasing history',
+      admin: {
+        description: 'Track sourcing details per batch',
+        initCollapsed: true,
+      },
+      fields: [
         {
-          name: 'pricePerUnit',
-          type: 'number',
-          min: 0,
-          required: true,
-        },
-        {
-          name: 'unitsPurchased',
-          type: 'number',
-          min: 1,
-          required: true,
+          name: 'purchases',
+          type: 'array',
+          labels: {
+            plural: 'Purchases',
+            singular: 'Purchase',
+          },
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'date',
+                  type: 'date',
+                  required: true,
+                  admin: {
+                    width: '40%',
+                  },
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  required: true,
+                  admin: {
+                    width: '60%',
+                  },
+                  validate: (value) => {
+                    if (!value) return 'URL is required'
+                    try {
+                      new URL(value)
+                      return true
+                    } catch {
+                      return 'Enter a valid purchase URL'
+                    }
+                  },
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'pricePerUnit',
+                  type: 'number',
+                  min: 0,
+                  required: true,
+                  admin: {
+                    width: '50%',
+                  },
+                },
+                {
+                  name: 'unitsPurchased',
+                  type: 'number',
+                  min: 1,
+                  required: true,
+                  admin: {
+                    width: '50%',
+                  },
+                },
+              ],
+            },
+          ],
         },
       ],
     },

@@ -17,28 +17,37 @@ export const Vendors: CollectionConfig = {
   },
   fields: [
     {
-      name: 'name',
-      type: 'text',
-      required: true,
-    },
-    {
-      name: 'url',
-      type: 'text',
-      required: true,
-      admin: {
-        description: 'Public storefront or vendor URL',
-      },
-      validate: (value) => {
-        if (!value) return 'URL is required'
+      type: 'row',
+      fields: [
+        {
+          name: 'name',
+          type: 'text',
+          required: true,
+          admin: {
+            width: '40%',
+          },
+        },
+        {
+          name: 'url',
+          type: 'text',
+          required: true,
+          admin: {
+            description: 'Public storefront or vendor URL',
+            width: '60%',
+          },
+          validate: (value) => {
+            if (!value) return 'URL is required'
 
-        try {
-          // Throws if the URL is invalid
-          new URL(value)
-          return true
-        } catch {
-          return 'Enter a valid URL (include protocol)'
-        }
-      },
+            try {
+              // Throws if the URL is invalid
+              new URL(value)
+              return true
+            } catch {
+              return 'Enter a valid URL (include protocol)'
+            }
+          },
+        },
+      ],
     },
   ],
 }

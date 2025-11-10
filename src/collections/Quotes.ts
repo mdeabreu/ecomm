@@ -49,138 +49,34 @@ export const Quotes: CollectionConfig = {
       name: 'customer',
       type: 'relationship',
       relationTo: 'users',
-    },
-    {
-      name: 'customerEmail',
-      type: 'email',
       admin: {
         position: 'sidebar',
       },
     },
     {
-      name: 'notes',
-      type: 'textarea',
+      name: 'customerEmail',
+      type: 'email',
       admin: {
-        description: 'Optional requirements, deadlines, or context provided by the requester.',
+        description: 'Used when the requester is not logged in.',
+        position: 'sidebar',
       },
     },
     {
-      name: 'items',
-      type: 'array',
-      required: true,
-      minRows: 1,
-      labels: {
-        plural: 'Items',
-        singular: 'Item',
-      },
-      admin: {
-        initCollapsed: true,
-      },
-      fields: [
-        {
-          name: 'model',
-          type: 'relationship',
-          relationTo: 'models',
-          required: true,
-          filterOptions: ({ data }) => {
-            if (data.customer) {
-              return {
-                customer: {
-                  equals: data.customer,
-                },
-              }
-            }
-
-            return true
-          },
-        },
-        {
-          name: 'material',
-          type: 'relationship',
-          relationTo: 'materials',
-          required: true,
-          filterOptions: ({ siblingData }) => {
-            const colour = resolveRelationID(siblingData?.colour)
-
-            if (colour) {
-              return {
-                and: [
-                  {
-                    'filaments.active': {
-                      equals: true,
-                    },
-                  },
-                  {
-                    'filaments.colour': {
-                      equals: colour,
-                    },
-                  },
-                ],
-              }
-            }
-
-            return {
-              'filaments.active': {
-                equals: true,
-              },
-            }
-          },
-        },
-        {
-          name: 'colour',
-          type: 'relationship',
-          relationTo: 'colours',
-          required: true,
-          filterOptions: ({ siblingData }) => {
-            const material = resolveRelationID(siblingData?.material)
-
-            if (material) {
-              return {
-                and: [
-                  {
-                    'filaments.active': {
-                      equals: true,
-                    },
-                  },
-                  {
-                    'filaments.material': {
-                      equals: material,
-                    },
-                  },
-                ],
-              }
-            }
-
-            return {
-              'filaments.active': {
-                equals: true,
-              },
-            }
-          },
-        },
-        {
-          name: 'process',
-          type: 'relationship',
-          relationTo: 'processes',
-          required: true,
-          filterOptions: () => {
-            return {
-              active: {
-                equals: true,
-              },
-            }
-          },
-        },
-        {
-          name: 'filament',
-          type: 'relationship',
-          relationTo: 'filaments',
-          admin: {
-            readOnly: true,
-            position: 'sidebar',
-          },
-        },
+      name: 'status',
+      type: 'select',
+      defaultValue: 'new',
+      interfaceName: 'QuoteStatus',
+      options: [
+        { label: 'New', value: 'new' },
+        { label: 'Reviewing', value: 'reviewing' },
+        { label: 'Quoted', value: 'quoted' },
+        { label: 'Approved', value: 'approved' },
+        { label: 'Rejected', value: 'rejected' },
       ],
+      required: true,
+      admin: {
+        position: 'sidebar',
+      },
     },
     {
       type: 'row',
@@ -203,18 +99,161 @@ export const Quotes: CollectionConfig = {
       ],
     },
     {
-      name: 'status',
-      type: 'select',
-      defaultValue: 'new',
-      interfaceName: 'QuoteStatus',
-      options: [
-        { label: 'New', value: 'new' },
-        { label: 'Reviewing', value: 'reviewing' },
-        { label: 'Quoted', value: 'quoted' },
-        { label: 'Approved', value: 'approved' },
-        { label: 'Rejected', value: 'rejected' },
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Request details',
+          fields: [
+            {
+              name: 'items',
+              type: 'array',
+              required: true,
+              minRows: 1,
+              labels: {
+                plural: 'Items',
+                singular: 'Item',
+              },
+              admin: {
+                initCollapsed: true,
+              },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'model',
+                      type: 'relationship',
+                      relationTo: 'models',
+                      required: true,
+                      admin: {
+                        width: '50%',
+                      },
+                      filterOptions: ({ data }) => {
+                        if (data.customer) {
+                          return {
+                            customer: {
+                              equals: data.customer,
+                            },
+                          }
+                        }
+
+                        return true
+                      },
+                    },
+                    {
+                      name: 'process',
+                      type: 'relationship',
+                      relationTo: 'processes',
+                      required: true,
+                      admin: {
+                        width: '50%',
+                      },
+                      filterOptions: () => {
+                        return {
+                          active: {
+                            equals: true,
+                          },
+                        }
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'material',
+                      type: 'relationship',
+                      relationTo: 'materials',
+                      required: true,
+                      admin: {
+                        width: '50%',
+                      },
+                      filterOptions: ({ siblingData }) => {
+                        const colour = resolveRelationID(siblingData?.colour)
+
+                        if (colour) {
+                          return {
+                            and: [
+                              {
+                                'filaments.active': {
+                                  equals: true,
+                                },
+                              },
+                              {
+                                'filaments.colour': {
+                                  equals: colour,
+                                },
+                              },
+                            ],
+                          }
+                        }
+
+                        return {
+                          'filaments.active': {
+                            equals: true,
+                          },
+                        }
+                      },
+                    },
+                    {
+                      name: 'colour',
+                      type: 'relationship',
+                      relationTo: 'colours',
+                      required: true,
+                      admin: {
+                        width: '50%',
+                      },
+                      filterOptions: ({ siblingData }) => {
+                        const material = resolveRelationID(siblingData?.material)
+
+                        if (material) {
+                          return {
+                            and: [
+                              {
+                                'filaments.active': {
+                                  equals: true,
+                                },
+                              },
+                              {
+                                'filaments.material': {
+                                  equals: material,
+                                },
+                              },
+                            ],
+                          }
+                        }
+
+                        return {
+                          'filaments.active': {
+                            equals: true,
+                          },
+                        }
+                      },
+                    },
+                  ],
+                },
+                {
+                  name: 'filament',
+                  type: 'relationship',
+                  relationTo: 'filaments',
+                  admin: {
+                    readOnly: true,
+                    position: 'sidebar',
+                  },
+                },
+              ],
+            },
+            {
+              name: 'notes',
+              type: 'textarea',
+              admin: {
+                description: 'Optional requirements, deadlines, or context provided by the requester.',
+              },
+            },
+          ],
+        },
       ],
-      required: true,
     },
   ],
   hooks: {

@@ -39,6 +39,9 @@ export const Models: CollectionConfig = {
       name: 'customer',
       type: 'relationship',
       relationTo: 'users',
+      admin: {
+        position: 'sidebar',
+      },
     },
   ],
   hooks: {

@@ -21,6 +21,9 @@ export const Colours: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+      admin: {
+        width: '50%',
+      },
     },
     {
       name: 'finish',
@@ -32,6 +35,9 @@ export const Colours: CollectionConfig = {
         { label: 'Silk', value: 'silk' },
       ],
       required: true,
+      admin: {
+        position: 'sidebar',
+      },
     },
     {
       name: 'type',
@@ -43,30 +49,42 @@ export const Colours: CollectionConfig = {
         { label: 'Gradient', value: 'gradient' },
       ],
       required: true,
+      admin: {
+        position: 'sidebar',
+      },
     },
     {
-      name: 'swatches',
-      type: 'array',
-      labels: {
-        plural: 'Swatches',
-        singular: 'Swatch',
+      type: 'collapsible',
+      label: 'Swatches',
+      admin: {
+        initCollapsed: true,
       },
-      minRows: 1,
       fields: [
         {
-          name: 'hexcode',
-          type: 'text',
-          required: true,
-          admin: {
-            description: 'Hex value including #, e.g. #FFAA00',
-            width: '50%',
+          name: 'swatches',
+          type: 'array',
+          labels: {
+            plural: 'Swatches',
+            singular: 'Swatch',
           },
-          validate: (value) => {
-            if (typeof value !== 'string') return 'Provide a valid hex code'
-            return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)
-              ? true
-              : 'Use a valid hex code including #'
-          },
+          minRows: 1,
+          fields: [
+            {
+              name: 'hexcode',
+              type: 'text',
+              required: true,
+              admin: {
+                description: 'Hex value including #, e.g. #FFAA00',
+                width: '50%',
+              },
+              validate: (value) => {
+                if (typeof value !== 'string') return 'Provide a valid hex code'
+                return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)
+                  ? true
+                  : 'Use a valid hex code including #'
+              },
+            },
+          ],
         },
       ],
     },

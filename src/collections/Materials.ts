@@ -21,14 +21,8 @@ export const Materials: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-    },
-    {
-      name: 'config',
-      type: 'json',
-      required: true,
-      defaultValue: {},
       admin: {
-        description: 'JSON blob describing printer settings (e.g., {"nozzleTemp": 210})',
+        width: '60%',
       },
     },
     {
@@ -37,16 +31,45 @@ export const Materials: CollectionConfig = {
       min: 0,
       admin: {
         description: 'Optional override; fallback is the Settings price per gram',
+        position: 'sidebar',
       },
     },
     {
-      name: 'filaments',
-      type: 'join',
-      collection: 'filaments',
-      on: 'material',
+      type: 'collapsible',
+      label: 'Material configuration',
       admin: {
-        defaultColumns: ['name', 'active'],
+        initCollapsed: true,
       },
+      fields: [
+        {
+          name: 'config',
+          type: 'json',
+          required: true,
+          defaultValue: {},
+          admin: {
+            description: 'JSON blob describing printer settings (e.g., {"nozzleTemp": 210})',
+          },
+        },
+      ],
+    },
+    {
+      type: 'collapsible',
+      label: 'Linked filaments',
+      admin: {
+        description: 'Preview filament records that reference this material',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          name: 'filaments',
+          type: 'join',
+          collection: 'filaments',
+          on: 'material',
+          admin: {
+            defaultColumns: ['name', 'active'],
+          },
+        },
+      ],
     },
   ],
 }

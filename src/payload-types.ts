@@ -1064,6 +1064,10 @@ export interface Material {
   id: number;
   name: string;
   /**
+   * Optional override; fallback is the Settings price per gram
+   */
+  pricePerGram?: number | null;
+  /**
    * JSON blob describing printer settings (e.g., {"nozzleTemp": 210})
    */
   config:
@@ -1075,10 +1079,6 @@ export interface Material {
     | number
     | boolean
     | null;
-  /**
-   * Optional override; fallback is the Settings price per gram
-   */
-  pricePerGram?: number | null;
   filaments?: {
     docs?: (number | Filament)[];
     hasNextPage?: boolean;
@@ -1113,9 +1113,6 @@ export interface Filament {
     | number
     | boolean
     | null;
-  /**
-   * Track sourcing details per batch
-   */
   purchases?:
     | {
         date: string;
@@ -1162,7 +1159,7 @@ export interface Process {
   id: number;
   name: string;
   /**
-   * Uncheck to hide this filament from customer-facing selectors
+   * Uncheck to hide this process from customer-facing selectors
    */
   active: boolean;
   /**
@@ -1207,22 +1204,25 @@ export interface Model {
 export interface Quote {
   id: number;
   customer?: (number | null) | User;
+  /**
+   * Used when the requester is not logged in.
+   */
   customerEmail?: string | null;
+  status: QuoteStatus;
+  amount?: number | null;
+  currency?: 'USD' | null;
+  items: {
+    model: number | Model;
+    process: number | Process;
+    material: number | Material;
+    colour: number | Colour;
+    filament?: (number | null) | Filament;
+    id?: string | null;
+  }[];
   /**
    * Optional requirements, deadlines, or context provided by the requester.
    */
   notes?: string | null;
-  items: {
-    model: number | Model;
-    material: number | Material;
-    colour: number | Colour;
-    process: number | Process;
-    filament?: (number | null) | Filament;
-    id?: string | null;
-  }[];
-  amount?: number | null;
-  currency?: 'USD' | null;
-  status: QuoteStatus;
   updatedAt: string;
   createdAt: string;
 }
@@ -1623,8 +1623,8 @@ export interface VendorsSelect<T extends boolean = true> {
  */
 export interface MaterialsSelect<T extends boolean = true> {
   name?: T;
-  config?: T;
   pricePerGram?: T;
+  config?: T;
   filaments?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1707,20 +1707,20 @@ export interface ModelsSelect<T extends boolean = true> {
 export interface QuotesSelect<T extends boolean = true> {
   customer?: T;
   customerEmail?: T;
-  notes?: T;
+  status?: T;
+  amount?: T;
+  currency?: T;
   items?:
     | T
     | {
         model?: T;
+        process?: T;
         material?: T;
         colour?: T;
-        process?: T;
         filament?: T;
         id?: T;
       };
-  amount?: T;
-  currency?: T;
-  status?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }

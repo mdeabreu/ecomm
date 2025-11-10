@@ -21,6 +21,9 @@ export const Processes: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+      admin: {
+        width: '60%',
+      },
     },
     {
       name: 'active',
@@ -28,18 +31,27 @@ export const Processes: CollectionConfig = {
       defaultValue: true,
       required: true,
       admin: {
-        description: 'Uncheck to hide this filament from customer-facing selectors',
+        description: 'Uncheck to hide this process from customer-facing selectors',
         position: 'sidebar',
       },
     },
     {
-      name: 'config',
-      type: 'json',
-      defaultValue: {},
-      required: true,
+      type: 'collapsible',
+      label: 'Process configuration',
       admin: {
-        description: 'JSON definition for slicer settings or workflow steps',
+        initCollapsed: true,
       },
+      fields: [
+        {
+          name: 'config',
+          type: 'json',
+          defaultValue: {},
+          required: true,
+          admin: {
+            description: 'JSON definition for slicer settings or workflow steps',
+          },
+        },
+      ],
     },
   ],
 }
