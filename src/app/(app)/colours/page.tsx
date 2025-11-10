@@ -1,4 +1,5 @@
 import { ColourSwatch } from '@/components/colour/ColourSwatch'
+import { LibraryGrid } from '@/components/library/LibraryGrid'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
@@ -34,9 +35,9 @@ export default async function ColoursPage() {
         </p>
       </header>
 
-      <section className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {colours.docs.length ? (
-          colours.docs.map((colour) => (
+      {colours.docs.length ? (
+        <LibraryGrid>
+          {colours.docs.map((colour) => (
             <ColourSwatch
               key={colour.id}
               description={colour.description}
@@ -46,11 +47,11 @@ export default async function ColoursPage() {
               swatches={colour.swatches ?? []}
               type={colour.type}
             />
-          ))
-        ) : (
-          <p className="text-muted-foreground">No colours are published yet. Check back soon.</p>
-        )}
-      </section>
+          ))}
+        </LibraryGrid>
+      ) : (
+        <p className="mt-10 text-muted-foreground">No colours are published yet. Check back soon.</p>
+      )}
     </div>
   )
 }
