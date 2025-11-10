@@ -14,6 +14,7 @@ import { imageTshirtBlackData } from './image-tshirt-black'
 import { imageTshirtWhiteData } from './image-tshirt-white'
 import { imageHero1Data } from './image-hero-1'
 import { Address, Transaction, VariantOption } from '@/payload-types'
+import { ecommerceCurrenciesConfig } from '@/config/currencies'
 
 const seedDir = path.dirname(fileURLToPath(import.meta.url))
 
@@ -382,12 +383,24 @@ export const seed = async ({
     collection: 'quotes',
     data: {
       customer: customer.id,
-      models: [modelBenchy.id, modelCalicat.id],
-      material: materialPlaPlus.id,
-      colour: colourGalaxyBlack.id,
-      process: processFunctional.id,
-      filament: null,
-      price: 0,
+      items: [
+        {
+          model: modelBenchy.id,
+          material: materialPlaPlus.id,
+          colour: colourGalaxyBlack.id,
+          process: processFunctional.id,
+          filament: null,
+        },
+        {
+          model: modelCalicat.id,
+          material: materialPlaPlus.id,
+          colour: colourGalaxyBlack.id,
+          process: processFunctional.id,
+          filament: null,
+        },
+      ],
+      amount: 0,
+      currency: ecommerceCurrenciesConfig.defaultCurrency,
       status: 'new',
     },
   })
@@ -736,6 +749,13 @@ export const seed = async ({
           {
             link: {
               type: 'custom',
+              label: 'Request a quote',
+              url: '/create-quote',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
               label: 'Account',
               url: '/account',
             },
@@ -759,6 +779,13 @@ export const seed = async ({
               type: 'custom',
               label: 'Find my order',
               url: '/find-order',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Find my quote',
+              url: '/find-quote',
             },
           },
           {

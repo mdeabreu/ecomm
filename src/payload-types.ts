@@ -12,6 +12,11 @@
  */
 export type OrderStatus = ('processing' | 'completed' | 'cancelled' | 'refunded') | null;
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "QuoteStatus".
+ */
+export type QuoteStatus = 'new' | 'reviewing' | 'quoted' | 'approved' | 'rejected';
+/**
  * Supported timezones in IANA format.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1202,13 +1207,22 @@ export interface Model {
 export interface Quote {
   id: number;
   customer?: (number | null) | User;
-  models: (number | Model)[];
-  material: number | Material;
-  colour: number | Colour;
-  process: number | Process;
-  filament?: (number | null) | Filament;
-  status: 'new' | 'reviewing' | 'quoted' | 'approved' | 'rejected';
-  price?: number | null;
+  customerEmail?: string | null;
+  /**
+   * Optional requirements, deadlines, or context provided by the requester.
+   */
+  notes?: string | null;
+  items: {
+    model: number | Model;
+    material: number | Material;
+    colour: number | Colour;
+    process: number | Process;
+    filament?: (number | null) | Filament;
+    id?: string | null;
+  }[];
+  amount?: number | null;
+  currency?: 'USD' | null;
+  status: QuoteStatus;
   updatedAt: string;
   createdAt: string;
 }
@@ -1692,13 +1706,21 @@ export interface ModelsSelect<T extends boolean = true> {
  */
 export interface QuotesSelect<T extends boolean = true> {
   customer?: T;
-  models?: T;
-  material?: T;
-  colour?: T;
-  process?: T;
-  filament?: T;
+  customerEmail?: T;
+  notes?: T;
+  items?:
+    | T
+    | {
+        model?: T;
+        material?: T;
+        colour?: T;
+        process?: T;
+        filament?: T;
+        id?: T;
+      };
+  amount?: T;
+  currency?: T;
   status?: T;
-  price?: T;
   updatedAt?: T;
   createdAt?: T;
 }

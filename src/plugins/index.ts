@@ -15,6 +15,7 @@ import { adminOrPublishedStatus } from '@/access/adminOrPublishedStatus'
 import { adminOnly } from '@/access/adminOnly'
 import { adminOnlyFieldAccess } from '@/access/adminOnlyFieldAccess'
 import { customerOnlyFieldAccess } from '@/access/customerOnlyFieldAccess'
+import { ecommerceCurrenciesConfig } from '@/config/currencies'
 
 const generateTitle: GenerateTitle<Product | Page> = ({ doc }) => {
   return doc?.title ? `${doc.title} | Payload Ecommerce Template` : 'Payload Ecommerce Template'
@@ -73,6 +74,7 @@ export const plugins: Plugin[] = [
       adminOrPublishedStatus,
       customerOnlyFieldAccess,
     },
+    currencies: ecommerceCurrenciesConfig,
     customers: {
       slug: 'users',
     },
