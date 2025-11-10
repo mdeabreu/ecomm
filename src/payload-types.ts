@@ -1064,6 +1064,14 @@ export interface Material {
   id: number;
   name: string;
   /**
+   * Short public blurb shown in the material library.
+   */
+  description?: string | null;
+  /**
+   * Representative photo of a printed part or spool.
+   */
+  image?: (number | null) | Media;
+  /**
    * Optional override; fallback is the Settings price per gram
    */
   pricePerGram?: number | null;
@@ -1631,6 +1639,8 @@ export interface VendorsSelect<T extends boolean = true> {
  */
 export interface MaterialsSelect<T extends boolean = true> {
   name?: T;
+  description?: T;
+  image?: T;
   pricePerGram?: T;
   config?: T;
   filaments?: T;

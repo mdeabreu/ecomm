@@ -1,22 +1,24 @@
-import type { CollectionSlug, GlobalSlug, Payload, PayloadRequest, File } from 'payload'
+import type { CollectionSlug, File, GlobalSlug, Payload, PayloadRequest } from 'payload'
 
 import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
+import { ecommerceCurrenciesConfig } from '@/config/currencies'
+import { Address, Transaction, VariantOption } from '@/payload-types'
 import { contactFormData } from './contact-form'
 import { contactPageData } from './contact-page'
-import { productHatData } from './product-hat'
-import { productTshirtData, productTshirtVariant } from './product-tshirt'
 import { homePageData } from './home'
+import { imageArcticWhiteData } from './image-arctic-white'
+import { imageGalaxyBlackData } from './image-galaxy-black'
 import { imageHatData } from './image-hat'
+import { imageHero1Data } from './image-hero-1'
+import { imagePlaData } from './image-pla'
+import { imagePetgData } from './image-petg'
 import { imageTshirtBlackData } from './image-tshirt-black'
 import { imageTshirtWhiteData } from './image-tshirt-white'
-import { imageHero1Data } from './image-hero-1'
-import { imageGalaxyBlackData } from './image-galaxy-black'
-import { imageArcticWhiteData } from './image-arctic-white'
-import { Address, Transaction, VariantOption } from '@/payload-types'
-import { ecommerceCurrenciesConfig } from '@/config/currencies'
+import { productHatData } from './product-hat'
+import { productTshirtData, productTshirtVariant } from './product-tshirt'
 
 const seedDir = path.dirname(fileURLToPath(import.meta.url))
 
@@ -157,6 +159,8 @@ export const seed = async ({
     heroFile,
     imageGalaxyBlackFile,
     imageArcticWhiteFile,
+    imagePlaFile,
+    imagePetgFile,
   ] = await Promise.all([
     fetchFileByURL(
       'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/hat-logo.png',
@@ -172,6 +176,8 @@ export const seed = async ({
     ),
     readSeedFile('galaxy_black.png', 'image/png'),
     readSeedFile('arctic_white.png', 'image/png'),
+    readSeedFile('pla.png', 'image/png'),
+    readSeedFile('petg.png', 'image/png'),
   ])
 
   const [
@@ -182,6 +188,8 @@ export const seed = async ({
     imageHero,
     imageGalaxyBlack,
     imageArcticWhite,
+    imagePla,
+    imagePetg,
     accessoriesCategory,
     tshirtsCategory,
     hatsCategory,
@@ -225,6 +233,16 @@ export const seed = async ({
       data: imageArcticWhiteData,
       file: imageArcticWhiteFile,
     }),
+    payload.create({
+      collection: 'media',
+      data: imagePlaData,
+      file: imagePlaFile,
+    }),
+    payload.create({
+      collection: 'media',
+      data: imagePetgData,
+      file: imagePetgFile,
+    }),
     ...categories.map((category) =>
       payload.create({
         collection: 'categories',
@@ -260,6 +278,8 @@ export const seed = async ({
       collection: 'materials',
       data: {
         name: 'PLA+',
+        description: 'Balanced everyday filament for prototypes, fixtures, and aesthetic parts.',
+        image: imagePla.id,
         config: {
           nozzleTemp: 210,
           bedTemp: 60,
@@ -272,12 +292,14 @@ export const seed = async ({
       collection: 'materials',
       data: {
         name: 'PETG',
+        description: 'Tough, water-resistant filament ideal for functional prints and enclosures.',
+        image: imagePetg.id,
         config: {
           nozzleTemp: 240,
           bedTemp: 80,
           notes: 'Great for durable, water-resistant parts.',
         },
-        pricePerGram: 0.065,
+        pricePerGram: 0.07,
       },
     }),
   ])
@@ -772,6 +794,13 @@ export const seed = async ({
               type: 'custom',
               label: 'Colours',
               url: '/colours',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Materials',
+              url: '/materials',
             },
           },
           {

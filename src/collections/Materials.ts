@@ -11,7 +11,7 @@ export const Materials: CollectionConfig = {
     update: adminOnly,
   },
   admin: {
-    defaultColumns: ['name'],
+    defaultColumns: ['name', 'pricePerGram'],
     group: '3D Printing',
     useAsTitle: 'name',
   },
@@ -23,6 +23,21 @@ export const Materials: CollectionConfig = {
       unique: true,
       admin: {
         width: '60%',
+      },
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Short public blurb shown in the material library.',
+      },
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Representative photo of a printed part or spool.',
       },
     },
     {
