@@ -463,6 +463,7 @@ export const seed = async ({
           process: processFunctional.id,
           filament: null,
           grams: 135,
+          quantity: 1,
         },
         {
           model: modelCalicat.id,
@@ -471,6 +472,7 @@ export const seed = async ({
           process: processFunctional.id,
           filament: null,
           grams: 95,
+          quantity: 1,
           priceOverride: 22.5,
         },
       ],

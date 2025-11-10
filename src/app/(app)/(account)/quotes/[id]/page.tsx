@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import configPromise from '@payload-config'
-import { ChevronLeftIcon, FileIcon, PaletteIcon, RulerIcon } from 'lucide-react'
+import { ChevronLeftIcon, FileIcon, HashIcon, PaletteIcon, RulerIcon } from 'lucide-react'
 import { headers as getHeaders } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -70,6 +70,7 @@ type QuoteItemDetail = {
   material: Material | null
   model: Model | null
   process: Process | null
+  quantity: number
 }
 
 export default async function Quote({ params, searchParams }: PageProps) {
@@ -203,6 +204,10 @@ export default async function Quote({ params, searchParams }: PageProps) {
       const colour = (typeof item.colour === 'object' ? item.colour : null) as Colour | null
       const process = (typeof item.process === 'object' ? item.process : null) as Process | null
       const model = (typeof item.model === 'object' ? item.model : null) as Model | null
+      const quantity =
+        typeof item.quantity === 'number' && Number.isFinite(item.quantity) && item.quantity > 0
+          ? Math.floor(item.quantity)
+          : 1
 
       const keyCandidate =
         typeof item.id === 'string' || typeof item.id === 'number'
@@ -215,6 +220,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
         material,
         model,
         process,
+        quantity,
       }
     })
     .filter((item): item is QuoteItemDetail => item !== null)
@@ -360,7 +366,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
                         </div>
                       </div>
 
-                      <dl className="grid gap-3 text-sm md:grid-cols-3">
+                      <dl className="grid gap-3 text-sm md:grid-cols-4">
                         <div className="rounded-lg border bg-background/60 p-3">
                           <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
                             <RulerIcon className="size-4" />
@@ -404,6 +410,13 @@ export default async function Quote({ params, searchParams }: PageProps) {
                             Process
                           </dt>
                           <dd className="font-medium">{item.process?.name ?? 'Pending assignment'}</dd>
+                        </div>
+                        <div className="rounded-lg border bg-background/60 p-3">
+                          <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+                            <HashIcon className="size-4" />
+                            Quantity
+                          </dt>
+                          <dd className="font-medium">{item.quantity}</dd>
                         </div>
                       </dl>
                     </li>

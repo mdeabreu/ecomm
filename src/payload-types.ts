@@ -1237,9 +1237,10 @@ export interface Quote {
   currency?: 'USD' | null;
   items: {
     model: number | Model;
-    process: number | Process;
+    quantity: number;
     material: number | Material;
     colour: number | Colour;
+    process: number | Process;
     filament?: (number | null) | Filament;
     /**
      * Estimated grams required for this print (used for pricing).
@@ -1752,9 +1753,10 @@ export interface QuotesSelect<T extends boolean = true> {
     | T
     | {
         model?: T;
-        process?: T;
+        quantity?: T;
         material?: T;
         colour?: T;
+        process?: T;
         filament?: T;
         grams?: T;
         priceOverride?: T;

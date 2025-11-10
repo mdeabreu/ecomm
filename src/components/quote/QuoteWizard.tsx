@@ -65,7 +65,10 @@ type FilePreference = {
   material: string | null
   colour: string | null
   process: string | null
+  quantity: number
 }
+
+type BulkPreference = Omit<FilePreference, 'quantity'>
 
 type CompletedQuoteItem = {
   modelName: string
@@ -74,6 +77,7 @@ type CompletedQuoteItem = {
   colourName: string
   processName: string
   colourSwatches: string[]
+  quantity: number
 }
 
 type CompletedQuote = {
@@ -89,7 +93,7 @@ const steps = [
     title: 'Upload models',
   },
   {
-    description: 'Pick the material, colour, and process for each model.',
+    description: 'Pick the material, colour, process, and quantity for each model.',
     title: 'Choose preferences',
   },
   {
@@ -124,7 +128,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
   const [completedQuote, setCompletedQuote] = useState<CompletedQuote | null>(null)
   const [contactEmail, setContactEmail] = useState(user?.email ?? '')
   const [filePreferences, setFilePreferences] = useState<Record<string, FilePreference>>({})
-  const [bulkSelection, setBulkSelection] = useState<FilePreference>({
+  const [bulkSelection, setBulkSelection] = useState<BulkPreference>({
     material: null,
     colour: null,
     process: null,
@@ -187,7 +191,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
 
   const getPreferenceForFile = useCallback(
     (fileId: string): FilePreference => {
-      return filePreferences[fileId] ?? { material: null, colour: null, process: null }
+      return filePreferences[fileId] ?? { material: null, colour: null, process: null, quantity: 1 }
     },
     [filePreferences],
   )
@@ -198,7 +202,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
         const next = { ...prev }
         const existing = next[fileId]
           ? { ...next[fileId] }
-          : { material: null, colour: null, process: null }
+          : { material: null, colour: null, process: null, quantity: 1 }
 
         if (Object.prototype.hasOwnProperty.call(updates, 'material')) {
           const material = updates.material ?? null
@@ -216,6 +220,15 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
           existing.process = updates.process ?? null
         }
 
+        if (Object.prototype.hasOwnProperty.call(updates, 'quantity')) {
+          const rawQuantity = updates.quantity
+          const normalizedQuantity =
+            typeof rawQuantity === 'number' && Number.isFinite(rawQuantity) && rawQuantity > 0
+              ? Math.floor(rawQuantity)
+              : 1
+          existing.quantity = normalizedQuantity
+        }
+
         next[fileId] = existing
         return next
       })
@@ -223,7 +236,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
     [],
   )
 
-  const handleBulkSelectionChange = (field: keyof FilePreference, value: string | null) => {
+  const handleBulkSelectionChange = (field: keyof BulkPreference, value: string | null) => {
     setBulkSelection((prev) => {
       const next = { ...prev }
       if (field === 'material') {
@@ -298,7 +311,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
         const next = { ...prev }
         additions.forEach((item) => {
           if (!next[item.id]) {
-            next[item.id] = { material: null, colour: null, process: null }
+            next[item.id] = { material: null, colour: null, process: null, quantity: 1 }
           }
         })
         return next
@@ -333,7 +346,8 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
     files.length > 0 &&
     files.every((file) => {
       const prefs = filePreferences[file.id]
-      return prefs?.material && prefs?.colour && prefs?.process
+      if (!prefs) return false
+      return Boolean(prefs.material && prefs.colour && prefs.process && prefs.quantity > 0)
     })
 
   const canMoveForward = (activeStep === 0 && files.length > 0) || (activeStep === 1 && allFilesConfigured)
@@ -345,7 +359,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
     }
 
     if (!allFilesConfigured) {
-      setError('Select a material, colour, and process for each model before submitting.')
+      setError('Select a material, colour, process, and quantity for each model before submitting.')
       return
     }
 
@@ -390,13 +404,17 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
 
       const itemsPayload = files.map((file, index) => {
         const prefs = filePreferences[file.id]
-        if (!prefs?.material || !prefs?.colour || !prefs?.process) {
-          throw new Error('Select a material, colour, and process for every model.')
+        if (!prefs?.material || !prefs?.colour || !prefs?.process || !prefs?.quantity) {
+          throw new Error('Select a material, colour, process, and quantity for every model.')
         }
 
         const materialId = Number(prefs.material)
         const colourId = Number(prefs.colour)
         const processId = Number(prefs.process)
+        const quantity =
+          typeof prefs.quantity === 'number' && Number.isFinite(prefs.quantity)
+            ? Math.max(1, Math.floor(prefs.quantity))
+            : 1
 
         if ([materialId, colourId, processId].some((value) => Number.isNaN(value))) {
           throw new Error('Select valid material, colour, and process options before submitting.')
@@ -407,6 +425,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
           material: materialId,
           model: uploadedModelIds[index],
           process: processId,
+          quantity,
         }
       })
 
@@ -444,6 +463,10 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
         const processName = prefs?.process
           ? processMap.get(prefs.process)?.name ?? 'Selected process'
           : 'Selected process'
+        const quantity =
+          typeof prefs?.quantity === 'number' && Number.isFinite(prefs.quantity)
+            ? Math.max(1, Math.floor(prefs.quantity))
+            : 1
 
         return {
           colourName: colourDetails?.name ?? 'Selected colour',
@@ -451,6 +474,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
           materialName,
           modelName: file.file.name,
           processName,
+          quantity,
           size: file.file.size,
         }
       })
@@ -512,7 +536,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                     <span className="font-medium">{item.modelName}</span>
                     <span className="ml-3 shrink-0 text-muted-foreground">{formatFileSize(item.size)}</span>
                   </div>
-                  <dl className="grid gap-2 text-xs md:grid-cols-3">
+                  <dl className="grid gap-2 text-xs md:grid-cols-4">
                     <div>
                       <dt className="text-muted-foreground">Material</dt>
                       <dd className="font-medium">{item.materialName}</dd>
@@ -537,6 +561,10 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                     <div>
                       <dt className="text-muted-foreground">Process</dt>
                       <dd className="font-medium">{item.processName}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-muted-foreground">Quantity</dt>
+                      <dd className="font-medium">{item.quantity}</dd>
                     </div>
                   </dl>
                 </li>
@@ -701,19 +729,19 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                     <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                       <div>
                         <p className="text-sm font-medium">Bulk preferences</p>
-                      <p className="text-xs text-muted-foreground">
-                        Choose a material, colour, and process once, then apply them to every model.
-                        You can still customize individual files afterward.
-                      </p>
-                    </div>
-                    <Button
-                      disabled={!bulkSelectionReady}
-                      onClick={applyBulkSelections}
-                      type="button"
-                      variant="outline"
-                    >
-                      Apply to all models
-                    </Button>
+                        <p className="text-xs text-muted-foreground">
+                          Choose a material, colour, and process once, then apply them to every model.
+                          You can still customize individual files afterward.
+                        </p>
+                      </div>
+                      <Button
+                        disabled={!bulkSelectionReady}
+                        onClick={applyBulkSelections}
+                        type="button"
+                        variant="outline"
+                      >
+                        Apply to all models
+                      </Button>
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-3">
@@ -804,6 +832,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                   const prefs = getPreferenceForFile(item.id)
                   const materialOptions = materials
                   const colourOptions = getAvailableColoursForMaterial(prefs.material)
+                  const quantityInputId = `quantity-${item.id}`
 
                   return (
                   <div key={item.id} className="space-y-4 rounded-lg border bg-muted/20 p-4">
@@ -811,7 +840,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                       <p className="font-medium">{item.file.name}</p>
                       <p className="text-xs text-muted-foreground">{formatFileSize(item.file.size)}</p>
                     </div>
-                    <div className="grid gap-4 md:grid-cols-3">
+                    <div className="grid gap-4 md:grid-cols-4">
                       <div className="space-y-2">
                         <Label>Material</Label>
                         <Select
@@ -891,6 +920,25 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                           </SelectContent>
                         </Select>
                       </div>
+                      <div className="space-y-2">
+                        <Label htmlFor={quantityInputId}>Quantity</Label>
+                        <Input
+                          id={quantityInputId}
+                          inputMode="numeric"
+                          className="bg-transparent"
+                          min={1}
+                          onChange={(event) =>
+                            updateFilePreference(item.id, {
+                              quantity: Number.isNaN(event.target.valueAsNumber)
+                                ? 1
+                                : event.target.valueAsNumber,
+                            })
+                          }
+                          step={1}
+                          type="number"
+                          value={prefs.quantity ?? 1}
+                        />
+                      </div>
                     </div>
                   </div>
                 )
@@ -930,7 +978,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                           {formatFileSize(item.file.size)}
                         </span>
                       </div>
-                      <dl className="grid gap-2 text-xs md:grid-cols-3">
+                      <dl className="grid gap-2 text-xs md:grid-cols-4">
                         <div>
                           <dt className="text-muted-foreground">Material</dt>
                           <dd className="font-medium">{materialName}</dd>
@@ -942,6 +990,10 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                         <div>
                           <dt className="text-muted-foreground">Process</dt>
                           <dd className="font-medium">{processName}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted-foreground">Quantity</dt>
+                          <dd className="font-medium">{prefs.quantity}</dd>
                         </div>
                       </dl>
                     </li>

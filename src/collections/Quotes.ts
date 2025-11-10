@@ -129,11 +129,14 @@ const resolveQuoteItemsAndAmount: CollectionBeforeChangeHook = async ({ data, re
       }
 
       const grams = typeof item.grams === 'number' && item.grams > 0 ? item.grams : 0
+      const rawQuantity =
+        typeof item.quantity === 'number' && Number.isFinite(item.quantity) ? item.quantity : 1
+      const quantity = Math.max(1, Math.floor(rawQuantity))
       const hasOverride = typeof item.priceOverride === 'number'
       let lineAmount = 0
 
       if (hasOverride) {
-        lineAmount = Math.round(Math.max(0, item.priceOverride as number) * 100)
+        lineAmount = Math.round(Math.max(0, item.priceOverride as number) * quantity * 100)
       } else if (grams > 0) {
         let pricePerGram = defaultPricePerGram
         if (material) {
@@ -173,7 +176,7 @@ const resolveQuoteItemsAndAmount: CollectionBeforeChangeHook = async ({ data, re
         }
 
         if (pricePerGram > 0) {
-          lineAmount = Math.round(pricePerGram * grams * 100)
+          lineAmount = Math.round(pricePerGram * grams * quantity * 100)
         }
       }
 
@@ -182,6 +185,7 @@ const resolveQuoteItemsAndAmount: CollectionBeforeChangeHook = async ({ data, re
       normalizedItems.push({
         ...item,
         filament: filamentID,
+        quantity,
       })
     }
 
@@ -295,7 +299,7 @@ export const Quotes: CollectionConfig = {
                       relationTo: 'models',
                       required: true,
                       admin: {
-                        width: '50%',
+                        width: '75%',
                       },
                       filterOptions: ({ data }) => {
                         if (data.customer) {
@@ -310,19 +314,13 @@ export const Quotes: CollectionConfig = {
                       },
                     },
                     {
-                      name: 'process',
-                      type: 'relationship',
-                      relationTo: 'processes',
+                      name: 'quantity',
+                      type: 'number',
+                      min: 1,
                       required: true,
+                      defaultValue: 1,
                       admin: {
-                        width: '50%',
-                      },
-                      filterOptions: () => {
-                        return {
-                          active: {
-                            equals: true,
-                          },
-                        }
+                        width: '25%',
                       },
                     },
                   ],
@@ -336,7 +334,7 @@ export const Quotes: CollectionConfig = {
                       relationTo: 'materials',
                       required: true,
                       admin: {
-                        width: '50%',
+                        width: '33%',
                       },
                       filterOptions: ({ siblingData }) => {
                         const colour = resolveRelationID(siblingData?.colour)
@@ -371,7 +369,7 @@ export const Quotes: CollectionConfig = {
                       relationTo: 'colours',
                       required: true,
                       admin: {
-                        width: '50%',
+                        width: '33%',
                       },
                       filterOptions: ({ siblingData }) => {
                         const material = resolveRelationID(siblingData?.material)
@@ -395,6 +393,22 @@ export const Quotes: CollectionConfig = {
 
                         return {
                           'filaments.active': {
+                            equals: true,
+                          },
+                        }
+                      },
+                    },
+                    {
+                      name: 'process',
+                      type: 'relationship',
+                      relationTo: 'processes',
+                      required: true,
+                      admin: {
+                        width: '33%',
+                      },
+                      filterOptions: () => {
+                        return {
+                          active: {
                             equals: true,
                           },
                         }
