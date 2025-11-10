@@ -1175,6 +1175,14 @@ export interface Process {
   id: number;
   name: string;
   /**
+   * Public summary shown in the process library.
+   */
+  description?: string | null;
+  /**
+   * Representative photo for this process.
+   */
+  image?: (number | null) | Media;
+  /**
    * Uncheck to hide this process from customer-facing selectors
    */
   active: boolean;
@@ -1653,6 +1661,8 @@ export interface MaterialsSelect<T extends boolean = true> {
  */
 export interface ProcessesSelect<T extends boolean = true> {
   name?: T;
+  description?: T;
+  image?: T;
   active?: T;
   config?: T;
   updatedAt?: T;

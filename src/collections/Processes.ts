@@ -26,6 +26,21 @@ export const Processes: CollectionConfig = {
       },
     },
     {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Public summary shown in the process library.',
+      },
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Representative photo for this process.',
+      },
+    },
+    {
       name: 'active',
       type: 'checkbox',
       defaultValue: true,

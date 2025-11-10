@@ -10,11 +10,13 @@ import { contactFormData } from './contact-form'
 import { contactPageData } from './contact-page'
 import { homePageData } from './home'
 import { imageArcticWhiteData } from './image-arctic-white'
+import { imageDraftData } from './image-draft'
 import { imageGalaxyBlackData } from './image-galaxy-black'
 import { imageHatData } from './image-hat'
 import { imageHero1Data } from './image-hero-1'
 import { imagePlaData } from './image-pla'
 import { imagePetgData } from './image-petg'
+import { imageQualityData } from './image-quality'
 import { imageTshirtBlackData } from './image-tshirt-black'
 import { imageTshirtWhiteData } from './image-tshirt-white'
 import { productHatData } from './product-hat'
@@ -161,6 +163,8 @@ export const seed = async ({
     imageArcticWhiteFile,
     imagePlaFile,
     imagePetgFile,
+    imageDraftFile,
+    imageQualityFile,
   ] = await Promise.all([
     fetchFileByURL(
       'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/hat-logo.png',
@@ -178,6 +182,8 @@ export const seed = async ({
     readSeedFile('arctic_white.png', 'image/png'),
     readSeedFile('pla.png', 'image/png'),
     readSeedFile('petg.png', 'image/png'),
+    readSeedFile('draft.png', 'image/png'),
+    readSeedFile('quality.png', 'image/png'),
   ])
 
   const [
@@ -190,6 +196,8 @@ export const seed = async ({
     imageArcticWhite,
     imagePla,
     imagePetg,
+    imageDraft,
+    imageQuality,
     accessoriesCategory,
     tshirtsCategory,
     hatsCategory,
@@ -242,6 +250,16 @@ export const seed = async ({
       collection: 'media',
       data: imagePetgData,
       file: imagePetgFile,
+    }),
+    payload.create({
+      collection: 'media',
+      data: imageDraftData,
+      file: imageDraftFile,
+    }),
+    payload.create({
+      collection: 'media',
+      data: imageQualityData,
+      file: imageQualityFile,
     }),
     ...categories.map((category) =>
       payload.create({
@@ -309,6 +327,8 @@ export const seed = async ({
       collection: 'processes',
       data: {
         name: 'Draft Print',
+        description: 'Fastest turnaround with coarse layers—perfect for fit checks and prototypes.',
+        image: imageDraft.id,
         config: {
           layerHeight: 0.28,
           infill: '10%',
@@ -321,6 +341,8 @@ export const seed = async ({
       collection: 'processes',
       data: {
         name: 'Functional Part',
+        description: 'Balanced strength and finish for end-use parts with moderate lead times.',
+        image: imageQuality.id,
         config: {
           layerHeight: 0.16,
           infill: '35%',
@@ -801,6 +823,13 @@ export const seed = async ({
               type: 'custom',
               label: 'Materials',
               url: '/materials',
+            },
+          },
+          {
+            link: {
+              type: 'custom',
+              label: 'Processes',
+              url: '/processes',
             },
           },
           {
