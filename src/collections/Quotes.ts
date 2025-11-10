@@ -44,15 +44,16 @@ const normalizeQuoteCustomer: CollectionBeforeChangeHook = async ({ data, origin
   const existingCustomer =
     resolveRelationID(data.customer) ?? resolveRelationID(originalDoc?.customer)
 
-  const requesterRoles = Array.isArray(req.user?.roles) ? (req.user?.roles as string[]) : []
-  const isCustomerUser = requesterRoles.includes('customer')
-
-  if (req.user && isCustomerUser) {
+  if (existingCustomer) {
+    data.customer = existingCustomer
+  }
+  else if (existingEmail) {
+    data.customerEmail = existingEmail
+  }
+  else if (req.user) {
     data.customer = req.user.id
   } else if (!existingCustomer && !existingEmail) {
     throw new Error('Please include a contact email so we can follow up about your quote.')
-  } else if (existingCustomer) {
-    data.customer = existingCustomer
   }
 
   return data

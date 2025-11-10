@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/providers/Auth'
+import { Message } from '@/components/Message'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -20,7 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Message } from '@/components/Message'
+import { Textarea } from '@/components/ui/textarea'
+import { useAuth } from '@/providers/Auth'
 import { cn } from '@/utilities/cn'
 import { UploadCloudIcon, XCircleIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -696,10 +696,11 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
               </p>
             ) : (
               <>
-                <div className="rounded-lg border bg-muted/20 p-4 space-y-4">
-                  <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <p className="text-sm font-medium">Bulk preferences</p>
+                {files.length > 1 && (
+                  <div className="space-y-4 rounded-xl border border-dashed border-muted-foreground/40 bg-background p-6 shadow-sm">
+                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <p className="text-sm font-medium">Bulk preferences</p>
                       <p className="text-xs text-muted-foreground">
                         Choose a material, colour, and process once, then apply them to every model.
                         You can still customize individual files afterward.
@@ -797,6 +798,7 @@ export const QuoteWizard: React.FC<QuoteWizardProps> = ({
                     </div>
                   </div>
                 </div>
+                )}
 
                 {files.map((item) => {
                   const prefs = getPreferenceForFile(item.id)
