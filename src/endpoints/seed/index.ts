@@ -462,6 +462,7 @@ export const seed = async ({
           colour: colourGalaxyBlack.id,
           process: processFunctional.id,
           filament: null,
+          grams: 135,
         },
         {
           model: modelCalicat.id,
@@ -469,6 +470,8 @@ export const seed = async ({
           colour: colourGalaxyBlack.id,
           process: processFunctional.id,
           filament: null,
+          grams: 95,
+          priceOverride: 22.5,
         },
       ],
       amount: 0,

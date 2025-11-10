@@ -1241,6 +1241,14 @@ export interface Quote {
     material: number | Material;
     colour: number | Colour;
     filament?: (number | null) | Filament;
+    /**
+     * Estimated grams required for this print (used for pricing).
+     */
+    grams?: number | null;
+    /**
+     * Optional manual price in store currency (e.g., 24.5 overrides auto calc).
+     */
+    priceOverride?: number | null;
     id?: string | null;
   }[];
   /**
@@ -1748,6 +1756,8 @@ export interface QuotesSelect<T extends boolean = true> {
         material?: T;
         colour?: T;
         filament?: T;
+        grams?: T;
+        priceOverride?: T;
         id?: T;
       };
   notes?: T;
