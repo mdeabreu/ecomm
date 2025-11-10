@@ -1132,6 +1132,14 @@ export interface Filament {
 export interface Colour {
   id: number;
   name: string;
+  /**
+   * Optional blurb displayed in the public colour library.
+   */
+  description?: string | null;
+  /**
+   * Use a lifestyle or spool photo to represent this colour.
+   */
+  image?: (number | null) | Media;
   finish: 'regular' | 'matte' | 'silk';
   type: 'solid' | 'co-extrusion' | 'gradient';
   swatches?:
@@ -1646,6 +1654,8 @@ export interface ProcessesSelect<T extends boolean = true> {
  */
 export interface ColoursSelect<T extends boolean = true> {
   name?: T;
+  description?: T;
+  image?: T;
   finish?: T;
   type?: T;
   swatches?:

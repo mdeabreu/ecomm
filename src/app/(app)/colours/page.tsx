@@ -1,10 +1,9 @@
 import { ColourSwatch } from '@/components/colour/ColourSwatch'
-import type { Colour, Filament } from '@/payload-types'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
 export const metadata = {
-  description: 'Browse available filament colours, finishes, and swatches.',
+  description: 'Browse available filament colours, finishes, swatches, and reference photos.',
   title: 'Colour Library',
 }
 
@@ -19,9 +18,9 @@ export default async function ColoursPage() {
     sort: 'name',
     where: {
       'filaments.active': {
-          equals: true,
-      }
-    }
+        equals: true,
+      },
+    },
   })
 
   return (
@@ -30,16 +29,19 @@ export default async function ColoursPage() {
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Colour Library</h1>
         <p className="text-base text-muted-foreground">
           Explore the colour finishes and material blends currently available for print jobs. Each
-          entry includes one or more swatches representing how the colour appears in person.
+          entry now includes reference photography, swatches, and a short description so you can
+          pick the perfect filament before requesting a quote.
         </p>
       </header>
 
-      <section className="mt-10 grid gap-6 md:grid-cols-2">
+      <section className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {colours.docs.length ? (
           colours.docs.map((colour) => (
             <ColourSwatch
               key={colour.id}
+              description={colour.description}
               finish={colour.finish}
+              image={colour.image}
               name={colour.name}
               swatches={colour.swatches ?? []}
               type={colour.type}

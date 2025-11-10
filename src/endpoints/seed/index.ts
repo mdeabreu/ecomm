@@ -13,6 +13,8 @@ import { imageHatData } from './image-hat'
 import { imageTshirtBlackData } from './image-tshirt-black'
 import { imageTshirtWhiteData } from './image-tshirt-white'
 import { imageHero1Data } from './image-hero-1'
+import { imageGalaxyBlackData } from './image-galaxy-black'
+import { imageArcticWhiteData } from './image-arctic-white'
 import { Address, Transaction, VariantOption } from '@/payload-types'
 import { ecommerceCurrenciesConfig } from '@/config/currencies'
 
@@ -148,21 +150,29 @@ export const seed = async ({
 
   payload.logger.info(`— Seeding media...`)
 
-  const [imageHatBuffer, imageTshirtBlackBuffer, imageTshirtWhiteBuffer, heroBuffer] =
-    await Promise.all([
-      fetchFileByURL(
-        'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/hat-logo.png',
-      ),
-      fetchFileByURL(
-        'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/tshirt-black.png',
-      ),
-      fetchFileByURL(
-        'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/tshirt-white.png',
-      ),
-      fetchFileByURL(
-        'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/website/src/endpoints/seed/image-hero1.webp',
-      ),
-    ])
+  const [
+    imageHatFile,
+    imageTshirtBlackFile,
+    imageTshirtWhiteFile,
+    heroFile,
+    imageGalaxyBlackFile,
+    imageArcticWhiteFile,
+  ] = await Promise.all([
+    fetchFileByURL(
+      'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/hat-logo.png',
+    ),
+    fetchFileByURL(
+      'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/tshirt-black.png',
+    ),
+    fetchFileByURL(
+      'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/ecommerce/src/endpoints/seed/tshirt-white.png',
+    ),
+    fetchFileByURL(
+      'https://raw.githubusercontent.com/payloadcms/payload/refs/heads/main/templates/website/src/endpoints/seed/image-hero1.webp',
+    ),
+    readSeedFile('galaxy_black.png', 'image/png'),
+    readSeedFile('arctic_white.png', 'image/png'),
+  ])
 
   const [
     customer,
@@ -170,6 +180,8 @@ export const seed = async ({
     imageTshirtBlack,
     imageTshirtWhite,
     imageHero,
+    imageGalaxyBlack,
+    imageArcticWhite,
     accessoriesCategory,
     tshirtsCategory,
     hatsCategory,
@@ -186,22 +198,32 @@ export const seed = async ({
     payload.create({
       collection: 'media',
       data: imageHatData,
-      file: imageHatBuffer,
+      file: imageHatFile,
     }),
     payload.create({
       collection: 'media',
       data: imageTshirtBlackData,
-      file: imageTshirtBlackBuffer,
+      file: imageTshirtBlackFile,
     }),
     payload.create({
       collection: 'media',
       data: imageTshirtWhiteData,
-      file: imageTshirtWhiteBuffer,
+      file: imageTshirtWhiteFile,
     }),
     payload.create({
       collection: 'media',
       data: imageHero1Data,
-      file: heroBuffer,
+      file: heroFile,
+    }),
+    payload.create({
+      collection: 'media',
+      data: imageGalaxyBlackData,
+      file: imageGalaxyBlackFile,
+    }),
+    payload.create({
+      collection: 'media',
+      data: imageArcticWhiteData,
+      file: imageArcticWhiteFile,
     }),
     ...categories.map((category) =>
       payload.create({
@@ -292,6 +314,9 @@ export const seed = async ({
       collection: 'colours',
       data: {
         name: 'Galaxy Black',
+        description:
+          'Deep midnight black with a galaxy shimmer that hides layer lines and highlights sharp edges.',
+        image: imageGalaxyBlack.id,
         finish: 'silk',
         type: 'gradient',
         swatches: [
@@ -304,6 +329,9 @@ export const seed = async ({
       collection: 'colours',
       data: {
         name: 'Arctic White',
+        description:
+          'Ultra-matte neutral white that takes paint and post-processing exceptionally well.',
+        image: imageArcticWhite.id,
         finish: 'matte',
         type: 'solid',
         swatches: [{ hexcode: '#F7F7F8' }],

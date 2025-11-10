@@ -26,6 +26,21 @@ export const Colours: CollectionConfig = {
       },
     },
     {
+      name: 'description',
+      type: 'textarea',
+      admin: {
+        description: 'Optional blurb displayed in the public colour library.',
+      },
+    },
+    {
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Use a lifestyle or spool photo to represent this colour.',
+      },
+    },
+    {
       name: 'finish',
       type: 'select',
       defaultValue: 'regular',
