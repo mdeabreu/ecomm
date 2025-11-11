@@ -3,11 +3,13 @@ import type { Metadata } from 'next'
 
 import { Price } from '@/components/Price'
 import { QuoteStatus as QuoteStatusBadge } from '@/components/QuoteStatus'
+import { QuoteSummaryCard } from '@/components/quote/wizard/QuoteSummaryCard'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
+import { extractSwatches } from '@/lib/quotes/utils'
 import { formatDateTime } from '@/utilities/formatDateTime'
 import configPromise from '@payload-config'
-import { ChevronLeftIcon, FileIcon, HashIcon, PaletteIcon, RulerIcon } from 'lucide-react'
+import { ChevronLeftIcon } from 'lucide-react'
 import { headers as getHeaders } from 'next/headers'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
@@ -47,21 +49,6 @@ const statusCopy: Record<
     description: 'Our team is reviewing the models and selected options.',
     label: 'Reviewing',
   },
-}
-
-const formatFileSize = (size?: number | null) => {
-  if (typeof size !== 'number' || Number.isNaN(size) || size <= 0) return null
-
-  const units = ['B', 'KB', 'MB', 'GB']
-  let index = 0
-  let value = size
-
-  while (value >= 1024 && index < units.length - 1) {
-    value /= 1024
-    index += 1
-  }
-
-  return `${value.toFixed(value >= 10 || index === 0 ? 0 : 1)} ${units[index]}`
 }
 
 type QuoteItemDetail = {
@@ -225,6 +212,51 @@ export default async function Quote({ params, searchParams }: PageProps) {
     })
     .filter((item): item is QuoteItemDetail => item !== null)
 
+  const summaryItems = items.map((item, index) => {
+    const modelFilename =
+      item.model?.originalFilename ??
+      item.model?.filename ??
+      (item.model?.id ? `Model ${item.model.id}` : `Item ${index + 1}`)
+    const fileSize =
+      typeof item.model?.filesize === 'number' && item.model.filesize > 0
+        ? item.model.filesize
+        : undefined
+    const uploadedAt = item.model?.createdAt
+    const colourSwatches = extractSwatches(item.colour?.swatches ?? [])
+
+    return {
+      attributes: [
+        { label: 'Material', value: item.material?.name ?? 'Pending assignment' },
+        {
+          label: 'Colour',
+          value: (
+            <div className="flex flex-col gap-2">
+              <span>{item.colour?.name ?? 'Pending assignment'}</span>
+              {colourSwatches.length ? (
+                <div className="flex gap-1">
+                  {colourSwatches.map((swatch) => (
+                    <span
+                      aria-label={swatch}
+                      className="inline-flex h-4 w-4 rounded-full border"
+                      key={`${item.key}-${swatch}`}
+                      style={{ backgroundColor: swatch }}
+                      title={swatch}
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ),
+        },
+        { label: 'Process', value: item.process?.name ?? 'Pending assignment' },
+        { label: 'Quantity', value: item.quantity },
+      ],
+      key: item.key,
+      name: modelFilename,
+      size: fileSize,
+    }
+  })
+
   const statusDetails = statusCopy[quote.status] ?? statusCopy.new
   const lookupEmail = normalizedLookupEmailOuter
   const viewerEmail =
@@ -303,126 +335,15 @@ export default async function Quote({ params, searchParams }: PageProps) {
           ) : null}
         </div>
 
-        {quote.notes ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>Notes</CardTitle>
-              <CardDescription>Additional details provided with this request.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="whitespace-pre-line text-sm text-muted-foreground">{quote.notes}</p>
-            </CardContent>
-          </Card>
-        ) : null}
-
         <Card>
-          <CardHeader>
-            <CardTitle>Requested items</CardTitle>
-            <CardDescription>Each uploaded model and the preferences attached to it.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {items.length ? (
-              <ul className="space-y-6">
-                {items.map((item, index) => {
-                  const modelFilename =
-                    item.model?.originalFilename ??
-                    item.model?.filename ??
-                    (item.model?.id ? `Model ${item.model.id}` : `Item ${index + 1}`)
-                  const readableSize = formatFileSize(item.model?.filesize)
-                  const uploadedAt = item.model?.createdAt
-                  const colourSwatches = Array.isArray(item.colour?.swatches)
-                    ? item.colour?.swatches
-                    : []
-
-                  return (
-                    <li
-                      className="space-y-4 rounded-lg border bg-muted/20 p-4"
-                      key={item.key}
-                    >
-                      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                        <div className="flex items-center gap-3">
-                          <FileIcon className="size-5 text-muted-foreground" />
-                          <div>
-                            <p className="font-medium">{modelFilename}</p>
-                            {uploadedAt ? (
-                              <p className="text-xs text-muted-foreground">
-                                Uploaded{' '}
-                                <time dateTime={uploadedAt}>
-                                  {formatDateTime({ date: uploadedAt, format: 'MMMM dd, yyyy' })}
-                                </time>
-                              </p>
-                            ) : null}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 md:text-right">
-                          {readableSize ? (
-                            <span className="text-sm text-muted-foreground">{readableSize}</span>
-                          ) : null}
-                          {item.model?.url ? (
-                            <Button asChild size="sm" variant="outline">
-                              <Link href={item.model.url}>Download</Link>
-                            </Button>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      <dl className="grid gap-3 text-sm md:grid-cols-4">
-                        <div className="rounded-lg border bg-background/60 p-3">
-                          <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                            <RulerIcon className="size-4" />
-                            Material
-                          </dt>
-                          <dd className="font-medium">{item.material?.name ?? 'Pending assignment'}</dd>
-                        </div>
-                        <div className="rounded-lg border bg-background/60 p-3">
-                          <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                            <PaletteIcon className="size-4" />
-                            Colour
-                          </dt>
-                          <dd className="font-medium">{item.colour?.name ?? 'Pending assignment'}</dd>
-                          {colourSwatches && colourSwatches.length ? (
-                            <div className="mt-3 flex gap-2">
-                              {colourSwatches.map((swatch) => {
-                                const value =
-                                  typeof swatch === 'object' && swatch && 'hexcode' in swatch
-                                    ? (swatch as { hexcode?: string }).hexcode
-                                    : typeof swatch === 'string'
-                                      ? swatch
-                                      : null
-
-                                if (!value) return null
-
-                                return (
-                                  <span
-                                    key={`${item.key}-${value}`}
-                                    className="inline-flex h-6 w-6 items-center justify-center rounded-full border"
-                                    style={{ backgroundColor: value }}
-                                    title={value}
-                                  />
-                                )
-                              })}
-                            </div>
-                          ) : null}
-                        </div>
-                        <div className="rounded-lg border bg-background/60 p-3">
-                          <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                            <RulerIcon className="size-4" />
-                            Process
-                          </dt>
-                          <dd className="font-medium">{item.process?.name ?? 'Pending assignment'}</dd>
-                        </div>
-                        <div className="rounded-lg border bg-background/60 p-3">
-                          <dt className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-                            <HashIcon className="size-4" />
-                            Quantity
-                          </dt>
-                          <dd className="font-medium">{item.quantity}</dd>
-                        </div>
-                      </dl>
-                    </li>
-                  )
-                })}
-              </ul>
+          <CardContent className="pt-6">
+            {summaryItems.length ? (
+              <QuoteSummaryCard
+                description="Each uploaded model and the preferences attached to it."
+                items={summaryItems}
+                notes={quote.notes ?? undefined}
+                title="Requested items"
+              />
             ) : (
               <p className="text-sm text-muted-foreground">
                 We did not receive any model files with this quote.
