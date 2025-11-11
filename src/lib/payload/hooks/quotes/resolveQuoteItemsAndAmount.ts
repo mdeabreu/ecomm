@@ -80,7 +80,8 @@ export const resolveQuoteItemsAndAmount: CollectionBeforeChangeHook = async ({ d
       let lineAmount = 0
 
       if (hasOverride) {
-        lineAmount = Math.round(Math.max(0, item.priceOverride as number) * quantity * 100)
+        const overrideValue = Math.max(0, item.priceOverride as number)
+        lineAmount = overrideValue * quantity
       } else if (grams > 0) {
         let pricePerGram = defaultPricePerGram
         if (material) {
@@ -130,6 +131,7 @@ export const resolveQuoteItemsAndAmount: CollectionBeforeChangeHook = async ({ d
         ...item,
         filament: filamentID,
         quantity,
+        lineAmount,
       })
     }
 

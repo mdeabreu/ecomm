@@ -1,5 +1,8 @@
 import type { Field } from 'payload'
 
+import { amountField } from '@payloadcms/plugin-ecommerce'
+
+import { ecommerceCurrenciesConfig } from '@/config/currencies'
 import { resolveRelationID } from '@/lib/quotes/relations'
 
 export const quoteItemsField = (): Field => ({
@@ -159,18 +162,33 @@ export const quoteItemsField = (): Field => ({
           min: 0,
           admin: {
             description: 'Estimated grams required for this print (used for pricing).',
-            width: '50%',
+            width: '33%',
           },
         },
-        {
-          name: 'priceOverride',
-          type: 'number',
-          min: 0,
-          admin: {
-            description: 'Optional manual price in store currency (e.g., 24.5 overrides auto calc).',
-            width: '50%',
+        amountField({
+          currenciesConfig: ecommerceCurrenciesConfig,
+          overrides: {
+            name: 'lineAmount',
+            label: 'Subtotal',
+            admin: {
+              description: 'Automatically calculated subtotal for this item.',
+              readOnly: true,
+              width: '33%',
+            },
           },
-        },
+        }),
+        amountField({
+          currenciesConfig: ecommerceCurrenciesConfig,
+          overrides: {
+            name: 'priceOverride',
+            label: 'Price override',
+            min: 0,
+            admin: {
+              description: 'Optional manual price per unit in store currency.',
+              width: '33%',
+            },
+          },
+        }),
       ],
     },
   ],

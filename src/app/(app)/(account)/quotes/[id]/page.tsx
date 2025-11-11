@@ -58,6 +58,7 @@ type QuoteItemDetail = {
   model: Model | null
   process: Process | null
   quantity: number
+  lineAmount?: number | null
 }
 
 export default async function Quote({ params, searchParams }: PageProps) {
@@ -208,6 +209,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
         model,
         process,
         quantity,
+        lineAmount: typeof item.lineAmount === 'number' ? item.lineAmount : null,
       }
     })
     .filter((item): item is QuoteItemDetail => item !== null)
@@ -223,6 +225,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
         : undefined
     const uploadedAt = item.model?.createdAt
     const colourSwatches = extractSwatches(item.colour?.swatches ?? [])
+    const lineAmount = typeof item.lineAmount === 'number' ? item.lineAmount : undefined
 
     return {
       attributes: [
@@ -252,6 +255,14 @@ export default async function Quote({ params, searchParams }: PageProps) {
         { label: 'Quantity', value: item.quantity },
       ],
       key: item.key,
+      meta:
+        typeof lineAmount === 'number' ? (
+          <Price
+            amount={lineAmount}
+            className="text-base font-semibold"
+            currencyCode={quote.currency ?? undefined}
+          />
+        ) : undefined,
       name: modelFilename,
       size: fileSize,
     }

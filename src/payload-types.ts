@@ -1247,7 +1247,11 @@ export interface Quote {
      */
     grams?: number | null;
     /**
-     * Optional manual price in store currency (e.g., 24.5 overrides auto calc).
+     * Automatically calculated subtotal for this item.
+     */
+    lineAmount?: number | null;
+    /**
+     * Optional manual price per unit in store currency.
      */
     priceOverride?: number | null;
     id?: string | null;
@@ -1759,6 +1763,7 @@ export interface QuotesSelect<T extends boolean = true> {
         process?: T;
         filament?: T;
         grams?: T;
+        lineAmount?: T;
         priceOverride?: T;
         id?: T;
       };

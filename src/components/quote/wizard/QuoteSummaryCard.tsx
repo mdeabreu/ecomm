@@ -7,6 +7,7 @@ type QuoteSummaryItem = {
   attributes: Array<{ label: string; value: React.ReactNode }>
   extra?: React.ReactNode
   key: string
+  meta?: React.ReactNode
   name: string
   size?: number
   variant?: 'default' | 'muted'
@@ -39,6 +40,7 @@ export const QuoteSummaryCard: React.FC<QuoteSummaryCardProps> = ({
           <ModelFileRow
             actions={item.actions}
             key={item.key}
+            meta={item.meta}
             name={item.name}
             size={item.size}
             variant={item.variant}

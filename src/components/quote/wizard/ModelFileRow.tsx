@@ -5,6 +5,7 @@ import React from 'react'
 type ModelFileRowProps = {
   actions?: React.ReactNode
   children?: React.ReactNode
+  meta?: React.ReactNode
   name: string
   size?: number
   subtitle?: React.ReactNode
@@ -14,6 +15,7 @@ type ModelFileRowProps = {
 export const ModelFileRow: React.FC<ModelFileRowProps> = ({
   actions,
   children,
+  meta,
   name,
   size,
   subtitle,
@@ -27,16 +29,21 @@ export const ModelFileRow: React.FC<ModelFileRowProps> = ({
       })}
     >
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex flex-col">
-          <span className="font-medium">{name}</span>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-semibold">{name}</span>
+            {typeof size === 'number' ? (
+              <span className="text-xs text-muted-foreground">{formatFileSize(size)}</span>
+            ) : null}
+          </div>
           {subtitle ? <span className="text-xs text-muted-foreground">{subtitle}</span> : null}
         </div>
-        <div className="flex items-center gap-3 md:text-right">
-          {typeof size === 'number' ? (
-            <span className="text-xs text-muted-foreground">{formatFileSize(size)}</span>
-          ) : null}
-          {actions}
-        </div>
+        {(meta || actions) && (
+          <div className="flex items-center gap-3 md:text-right">
+            {meta ? <div className="text-sm font-semibold text-foreground">{meta}</div> : null}
+            {actions}
+          </div>
+        )}
       </div>
 
       {children ? <div>{children}</div> : null}
