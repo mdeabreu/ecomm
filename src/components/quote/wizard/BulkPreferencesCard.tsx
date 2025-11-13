@@ -13,7 +13,7 @@ import type {
   MaterialOption,
   ProcessOption,
 } from '@/lib/quotes/types'
-import { normalizeId } from '@/lib/quotes/utils'
+import { formatPricePerGram, normalizeId } from '@/lib/quotes/utils'
 
 type BulkPreferencesCardProps = {
   bulkColourOptions: ColourOption[]
@@ -62,7 +62,7 @@ export const BulkPreferencesCard: React.FC<BulkPreferencesCardProps> = ({
             <SelectContent>
               {materials.map((material) => (
                 <SelectItem key={material.id} value={normalizeId(material.id)}>
-                  {material.name}
+                  {material.name} • {formatPricePerGram(material.pricePerGram)}
                 </SelectItem>
               ))}
             </SelectContent>

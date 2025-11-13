@@ -22,3 +22,11 @@ export const extractSwatches = (swatches: unknown): string[] => {
     })
     .filter((value): value is string => typeof value === 'string')
 }
+
+const defaultCurrency = process.env.NEXT_PUBLIC_STORE_CURRENCY || 'USD'
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  currency: defaultCurrency,
+  style: 'currency',
+})
+
+export const formatPricePerGram = (price: number) => `${currencyFormatter.format(price)}/g`

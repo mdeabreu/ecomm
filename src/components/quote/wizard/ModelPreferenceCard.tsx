@@ -14,7 +14,7 @@ import type {
   ProcessOption,
   SelectedFile,
 } from '@/lib/quotes/types'
-import { formatFileSize, normalizeId } from '@/lib/quotes/utils'
+import { formatFileSize, formatPricePerGram, normalizeId } from '@/lib/quotes/utils'
 
 type ModelPreferenceCardProps = {
   colourOptions: ColourOption[]
@@ -53,8 +53,13 @@ export const ModelPreferenceCard: React.FC<ModelPreferenceCardProps> = ({
             </SelectTrigger>
             <SelectContent>
               {materials.map((material) => (
-                <SelectItem key={material.id} value={normalizeId(material.id)}>
-                  {material.name}
+                <SelectItem className="pl-3" key={material.id} value={normalizeId(material.id)}>
+                  <span className="flex items-start flex-col">
+                    <span className="font-medium">{material.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      Price: {formatPricePerGram(material.pricePerGram)}
+                    </span>
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
@@ -90,7 +95,7 @@ export const ModelPreferenceCard: React.FC<ModelPreferenceCardProps> = ({
                         backgroundColor: colour.swatches?.[0] ?? '#f1f5f9',
                       }}
                     />
-                    <span>
+                    <span className="flex flex-col items-start">
                       <span className="block font-medium">{colour.name}</span>
                       <span className="block text-xs text-muted-foreground">
                         {[colour.finish, colour.type].filter(Boolean).join(' • ')}

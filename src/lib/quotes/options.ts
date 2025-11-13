@@ -18,7 +18,7 @@ type LoadQuoteWizardOptionsResult = {
 export const loadQuoteWizardOptions = async (
   payload: Payload,
 ): Promise<LoadQuoteWizardOptionsResult> => {
-  const [filaments, materials, colours, processes] = await Promise.all([
+  const [filaments, materials, colours, processes, settings] = await Promise.all([
     payload.find({
       collection: 'filaments',
       pagination: false,
@@ -39,6 +39,7 @@ export const loadQuoteWizardOptions = async (
       select: {
         id: true,
         name: true,
+        pricePerGram: true,
       },
     }),
     payload.find({
@@ -66,6 +67,12 @@ export const loadQuoteWizardOptions = async (
         },
       },
     }),
+    payload.findGlobal({
+      select: {
+        pricePerGram: true,
+      },
+      slug: 'settings',
+    }),
   ])
 
   const combinations: FilamentCombination[] = []
@@ -92,12 +99,17 @@ export const loadQuoteWizardOptions = async (
   const allowedMaterialIds = new Set(combinations.map((combo) => combo.materialId))
   const allowedColourIds = new Set(combinations.map((combo) => combo.colourId))
 
+  const defaultPricePerGram =
+    typeof settings?.pricePerGram === 'number' ? settings.pricePerGram : 0
+
   const materialOptions: MaterialOption[] =
     materials.docs
       ?.filter((material) => material?.id && allowedMaterialIds.has(normalizeId(material.id)))
       .map((material) => ({
         id: normalizeId(material.id),
         name: material.name ?? 'Untitled material',
+        pricePerGram:
+          typeof material.pricePerGram === 'number' ? material.pricePerGram : defaultPricePerGram,
       }))
       .sort((a, b) => a.name.localeCompare(b.name)) ?? []
 

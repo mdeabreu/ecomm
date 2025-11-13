@@ -1,6 +1,7 @@
 export type MaterialOption = {
   id: string
   name: string
+  pricePerGram: number
 }
 
 export type ColourOption = {

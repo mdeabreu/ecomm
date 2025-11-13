@@ -116,6 +116,9 @@ export interface Config {
     colours: {
       filaments: 'filaments';
     };
+    quotes: {
+      gcodes: 'gcodes';
+    };
     variantTypes: {
       options: 'variantOptions';
     };
@@ -1254,13 +1257,7 @@ export interface Quote {
      * Estimated grams required for this print (used for pricing).
      */
     grams?: number | null;
-    /**
-     * Automatically calculated subtotal for this item.
-     */
     lineAmount?: number | null;
-    /**
-     * Optional manual price per unit in store currency.
-     */
     priceOverride?: number | null;
     id?: string | null;
   }[];
@@ -1268,6 +1265,14 @@ export interface Quote {
    * Optional requirements, deadlines, or context provided by the requester.
    */
   notes?: string | null;
+  /**
+   * Auto-generated gcode records tied to this quote.
+   */
+  gcodes?: {
+    docs?: (number | Gcode)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1816,6 +1821,7 @@ export interface QuotesSelect<T extends boolean = true> {
         id?: T;
       };
   notes?: T;
+  gcodes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
