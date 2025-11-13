@@ -83,6 +83,7 @@ export interface Config {
     vendors: Vendor;
     materials: Material;
     processes: Process;
+    gcodes: Gcode;
     colours: Colour;
     filaments: Filament;
     models: Model;
@@ -129,6 +130,7 @@ export interface Config {
     vendors: VendorsSelect<false> | VendorsSelect<true>;
     materials: MaterialsSelect<false> | MaterialsSelect<true>;
     processes: ProcessesSelect<false> | ProcessesSelect<true>;
+    gcodes: GcodesSelect<false> | GcodesSelect<true>;
     colours: ColoursSelect<false> | ColoursSelect<true>;
     filaments: FilamentsSelect<false> | FilamentsSelect<true>;
     models: ModelsSelect<false> | ModelsSelect<true>;
@@ -1203,23 +1205,29 @@ export interface Process {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "models".
+ * via the `definition` "gcodes".
  */
-export interface Model {
+export interface Gcode {
   id: number;
-  originalFilename?: string | null;
-  customer?: (number | null) | User;
+  quote: number | Quote;
+  model: number | Model;
+  /**
+   * Payload job identifier used to track the slicing workflow.
+   */
+  sliceJobId?: string | null;
+  material: number | Material;
+  process: number | Process;
+  filament: number | Filament;
+  /**
+   * Captured from slicer output (grams).
+   */
+  estimatedWeight?: number | null;
+  /**
+   * Populated after the slicing job completes.
+   */
+  gcode?: string | null;
   updatedAt: string;
   createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1262,6 +1270,26 @@ export interface Quote {
   notes?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "models".
+ */
+export interface Model {
+  id: number;
+  originalFilename?: string | null;
+  customer?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1327,6 +1355,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'processes';
         value: number | Process;
+      } | null)
+    | ({
+        relationTo: 'gcodes';
+        value: number | Gcode;
       } | null)
     | ({
         relationTo: 'colours';
@@ -1678,6 +1710,22 @@ export interface ProcessesSelect<T extends boolean = true> {
   image?: T;
   active?: T;
   config?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gcodes_select".
+ */
+export interface GcodesSelect<T extends boolean = true> {
+  quote?: T;
+  model?: T;
+  sliceJobId?: T;
+  material?: T;
+  process?: T;
+  filament?: T;
+  estimatedWeight?: T;
+  gcode?: T;
   updatedAt?: T;
   createdAt?: T;
 }

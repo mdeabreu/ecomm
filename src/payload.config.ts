@@ -19,6 +19,7 @@ import { fileURLToPath } from 'url'
 import { Categories } from '@/collections/Categories'
 import { Colours } from '@/collections/Colours'
 import { Filaments } from '@/collections/Filaments'
+import { Gcodes } from '@/collections/Gcodes'
 import { Models } from '@/collections/Models'
 import { Quotes } from '@/collections/Quotes'
 import { Media } from '@/collections/Media'
@@ -54,6 +55,7 @@ export default buildConfig({
     Vendors,
     Materials,
     Processes,
+    Gcodes,
     Colours,
     Filaments,
     Models,

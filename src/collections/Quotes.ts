@@ -8,6 +8,7 @@ import { quoteItemsField } from '@/collections/fields/quoteItemsField'
 import { ecommerceCurrenciesConfig } from '@/config/currencies'
 import { normalizeQuoteCustomer } from '@/lib/payload/hooks/quotes/normalizeQuoteCustomer'
 import { resolveQuoteItemsAndAmount } from '@/lib/payload/hooks/quotes/resolveQuoteItemsAndAmount'
+import { createQuoteGcodes } from '@/lib/payload/hooks/quotes/createQuoteGcodes'
 
 export const Quotes: CollectionConfig = {
   slug: 'quotes',
@@ -96,10 +97,27 @@ export const Quotes: CollectionConfig = {
             },
           ],
         },
+        {
+          label: 'Gcodes',
+          fields: [
+            {
+              name: 'gcodes',
+              type: 'join',
+              collection: 'gcodes',
+              on: 'quote',
+              admin: {
+                allowCreate: false,
+                defaultColumns: ['model', 'material', 'process', 'filament'],
+                description: 'Auto-generated gcode records tied to this quote.',
+              },
+            },
+          ],
+        },
       ],
     },
   ],
   hooks: {
     beforeChange: [normalizeQuoteCustomer, resolveQuoteItemsAndAmount],
+    afterChange: [createQuoteGcodes],
   },
 }

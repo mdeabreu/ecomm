@@ -66,28 +66,34 @@ export const quoteItemsField = (): Field => ({
           },
           filterOptions: ({ siblingData }) => {
             const colour = resolveRelationID(siblingData?.colour)
+            const filament = resolveRelationID(siblingData?.filament)
+
+            const constraints = [
+              {
+                'filaments.active': {
+                  equals: true,
+                }
+              }
+            ]
+
+            if (filament) {
+              constraints.push({
+                filaments: {
+                  contains: filament,
+                }
+              })
+            }
 
             if (colour) {
-              return {
-                and: [
-                  {
-                    'filaments.active': {
-                      equals: true,
-                    },
-                  },
-                  {
-                    'filaments.colour': {
-                      equals: colour,
-                    },
-                  },
-                ],
-              }
+              constraints.push({
+                'filaments.colour': {
+                  equals: colour,
+                }
+              })
             }
 
             return {
-              'filaments.active': {
-                equals: true,
-              },
+              and: constraints,
             }
           },
         },
@@ -101,28 +107,34 @@ export const quoteItemsField = (): Field => ({
           },
           filterOptions: ({ siblingData }) => {
             const material = resolveRelationID(siblingData?.material)
+            const filament = resolveRelationID(siblingData?.filament)
+
+            const constraints = [
+              {
+                'filaments.active': {
+                  equals: true,
+                }
+              }
+            ]
+
+            if (filament) {
+              constraints.push({
+                filaments: {
+                  contains: filament,
+                }
+              })
+            }
 
             if (material) {
-              return {
-                and: [
-                  {
-                    'filaments.active': {
-                      equals: true,
-                    },
-                  },
-                  {
-                    'filaments.material': {
-                      equals: material,
-                    },
-                  },
-                ],
-              }
+              constraints.push({
+                'filaments.material': {
+                  equals: material,
+                }
+              })
             }
 
             return {
-              'filaments.active': {
-                equals: true,
-              },
+              and: constraints,
             }
           },
         },
@@ -149,8 +161,39 @@ export const quoteItemsField = (): Field => ({
       type: 'relationship',
       relationTo: 'filaments',
       admin: {
-        readOnly: true,
         position: 'sidebar',
+      },
+      filterOptions: ({ siblingData }) => {
+        const material = resolveRelationID(siblingData?.material)
+        const colour = resolveRelationID(siblingData?.colour)
+
+        const constraints = [
+          {
+            active: {
+              equals: true,
+            },
+          },
+        ]
+
+        if (material) {
+          constraints.push({
+            material: {
+              equals: material,
+            },
+          })
+        }
+
+        if (colour) {
+          constraints.push({
+            colour: {
+              equals: colour,
+            },
+          })
+        }
+
+        return {
+          and: constraints,
+        }
       },
     },
     {
@@ -162,7 +205,7 @@ export const quoteItemsField = (): Field => ({
           min: 0,
           admin: {
             description: 'Estimated grams required for this print (used for pricing).',
-            width: '33%',
+            width: '25%',
           },
         },
         amountField({
@@ -171,9 +214,9 @@ export const quoteItemsField = (): Field => ({
             name: 'lineAmount',
             label: 'Subtotal',
             admin: {
-              description: 'Automatically calculated subtotal for this item.',
+              //description: 'Automatically calculated subtotal for this item.',
               readOnly: true,
-              width: '33%',
+              width: '25%',
             },
           },
         }),
@@ -184,8 +227,8 @@ export const quoteItemsField = (): Field => ({
             label: 'Price override',
             min: 0,
             admin: {
-              description: 'Optional manual price per unit in store currency.',
-              width: '33%',
+              //description: 'Optional manual price per unit in store currency.',
+              width: '25%',
             },
           },
         }),
