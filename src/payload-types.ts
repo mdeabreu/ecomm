@@ -1253,9 +1253,7 @@ export interface Quote {
     colour: number | Colour;
     process: number | Process;
     filament?: (number | null) | Filament;
-    /**
-     * Estimated grams required for this print (used for pricing).
-     */
+    gcode?: (number | null) | Gcode;
     grams?: number | null;
     lineAmount?: number | null;
     priceOverride?: number | null;
@@ -1815,6 +1813,7 @@ export interface QuotesSelect<T extends boolean = true> {
         colour?: T;
         process?: T;
         filament?: T;
+        gcode?: T;
         grams?: T;
         lineAmount?: T;
         priceOverride?: T;

@@ -6,9 +6,9 @@ import { adminOrCustomerOwner } from '@/access/adminOrCustomerOwner'
 import { publicAccess } from '@/access/publicAccess'
 import { quoteItemsField } from '@/collections/fields/quoteItemsField'
 import { ecommerceCurrenciesConfig } from '@/config/currencies'
+import { createQuoteGcodes } from '@/lib/payload/hooks/quotes/createQuoteGcodes'
 import { normalizeQuoteCustomer } from '@/lib/payload/hooks/quotes/normalizeQuoteCustomer'
 import { resolveQuoteItemsAndAmount } from '@/lib/payload/hooks/quotes/resolveQuoteItemsAndAmount'
-import { createQuoteGcodes } from '@/lib/payload/hooks/quotes/createQuoteGcodes'
 
 export const Quotes: CollectionConfig = {
   slug: 'quotes',

@@ -200,11 +200,19 @@ export const quoteItemsField = (): Field => ({
       type: 'row',
       fields: [
         {
+          name: 'gcode',
+          type: 'relationship',
+          relationTo: 'gcodes',
+          admin: {
+            readOnly: true,
+            width: '25%'
+          },
+        },
+        {
           name: 'grams',
           type: 'number',
           min: 0,
           admin: {
-            description: 'Estimated grams required for this print (used for pricing).',
             width: '25%',
           },
         },
@@ -214,7 +222,6 @@ export const quoteItemsField = (): Field => ({
             name: 'lineAmount',
             label: 'Subtotal',
             admin: {
-              //description: 'Automatically calculated subtotal for this item.',
               readOnly: true,
               width: '25%',
             },
@@ -227,7 +234,6 @@ export const quoteItemsField = (): Field => ({
             label: 'Price override',
             min: 0,
             admin: {
-              //description: 'Optional manual price per unit in store currency.',
               width: '25%',
             },
           },
