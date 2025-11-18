@@ -31,7 +31,6 @@ import { Users } from '@/collections/Users'
 import { Vendors } from '@/collections/Vendors'
 import { Footer } from '@/globals/Footer'
 import { Header } from '@/globals/Header'
-import { Settings } from '@/globals/Settings'
 import { collectSliceContext } from '@/lib/jobs/tasks/collectSliceContext'
 import { parseGcodeTask } from '@/lib/jobs/tasks/parseGcodeTask'
 import { runSlicerTask } from '@/lib/jobs/tasks/runSlicerTask'
@@ -110,7 +109,7 @@ export default buildConfig({
   }),
   //email: nodemailerAdapter(),
   endpoints: [],
-  globals: [Header, Footer, Settings],
+  globals: [Header, Footer],
   plugins: [
     ...plugins,
     // storage-adapter-placeholder

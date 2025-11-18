@@ -14,8 +14,8 @@ import { imageDraftData } from './image-draft'
 import { imageGalaxyBlackData } from './image-galaxy-black'
 import { imageHatData } from './image-hat'
 import { imageHero1Data } from './image-hero-1'
-import { imagePlaData } from './image-pla'
 import { imagePetgData } from './image-petg'
+import { imagePlaData } from './image-pla'
 import { imageQualityData } from './image-quality'
 import { imageTshirtBlackData } from './image-tshirt-black'
 import { imageTshirtWhiteData } from './image-tshirt-white'
@@ -61,7 +61,7 @@ const colorVariantOptions = [
   { label: 'White', value: 'white' },
 ]
 
-const globals: GlobalSlug[] = ['header', 'footer', 'settings']
+const globals: GlobalSlug[] = ['header', 'footer']
 
 const baseAddressUSData: Transaction['billingAddress'] = {
   title: 'Dr.',
@@ -110,17 +110,9 @@ export const seed = async ({
   // clear the database
   await Promise.all(
     globals.map((global) => {
-      const data =
-        global === 'settings'
-          ? {
-              pricePerGram: 0,
-              machine: {},
-              process: {},
-              filament: {},
-            }
-          : {
-              navItems: [],
-            }
+      const data = {
+        navItems: [],
+      }
 
       return payload.updateGlobal({
         slug: global,
@@ -298,11 +290,7 @@ export const seed = async ({
         name: 'PLA+',
         description: 'Balanced everyday filament for prototypes, fixtures, and aesthetic parts.',
         image: imagePla.id,
-        config: {
-          nozzleTemp: 210,
-          bedTemp: 60,
-          notes: 'Strong everyday filament with low warp.',
-        },
+        config: {},
         pricePerGram: 0.05,
       },
     }),
@@ -312,11 +300,7 @@ export const seed = async ({
         name: 'PETG',
         description: 'Tough, water-resistant filament ideal for functional prints and enclosures.',
         image: imagePetg.id,
-        config: {
-          nozzleTemp: 240,
-          bedTemp: 80,
-          notes: 'Great for durable, water-resistant parts.',
-        },
+        config: {},
         pricePerGram: 0.07,
       },
     }),
@@ -327,28 +311,20 @@ export const seed = async ({
       collection: 'processes',
       data: {
         name: 'Draft Print',
+        active: true,
         description: 'Fastest turnaround with coarse layers—perfect for fit checks and prototypes.',
         image: imageDraft.id,
-        config: {
-          layerHeight: 0.28,
-          infill: '10%',
-          supports: 'none',
-          notes: 'Fast prototyping profile for dimension checks.',
-        },
+        config: {},
       },
     }),
     payload.create({
       collection: 'processes',
       data: {
         name: 'Functional Part',
+        active: true,
         description: 'Balanced strength and finish for end-use parts with moderate lead times.',
         image: imageQuality.id,
-        config: {
-          layerHeight: 0.16,
-          infill: '35%',
-          supports: 'tree',
-          notes: 'Balanced strength and surface finish for end-use prints.',
-        },
+        config: {},
       },
     }),
   ])
@@ -391,10 +367,7 @@ export const seed = async ({
       material: materialPlaPlus.id,
       vendor: vendorPrusa.id,
       colour: colourGalaxyBlack.id,
-      config: {
-        diameter: 1.75,
-        spoolWeightGrams: 1000,
-      },
+      config: {},
       purchases: [
         {
           date: new Date('2024-02-01T00:00:00.000Z').toISOString(),
@@ -414,10 +387,7 @@ export const seed = async ({
       material: materialPetg.id,
       vendor: vendorPolymaker.id,
       colour: colourArcticWhite.id,
-      config: {
-        diameter: 1.75,
-        spoolWeightGrams: 750,
-      },
+      config: {},
       purchases: [
         {
           date: new Date('2024-03-12T00:00:00.000Z').toISOString(),
@@ -896,25 +866,6 @@ export const seed = async ({
             },
           },
         ],
-      },
-    }),
-    payload.updateGlobal({
-      slug: 'settings',
-      data: {
-        pricePerGram: 0.045,
-        machine: {
-          defaultPrinter: 'Prusa MK4',
-          nozzleDiameter: 0.4,
-        },
-        process: {
-          layerHeight: 0.2,
-          infill: '20%',
-          supports: 'tree',
-        },
-        filament: {
-          storage: 'Dry box at 30% RH',
-          purgeLengthMm: 100,
-        },
       },
     }),
   ])

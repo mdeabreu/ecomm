@@ -6,6 +6,7 @@ import { adminOrCustomerOwner } from '@/access/adminOrCustomerOwner'
 import { publicAccess } from '@/access/publicAccess'
 import { quoteItemsField } from '@/collections/fields/quoteItemsField'
 import { ecommerceCurrenciesConfig } from '@/config/currencies'
+import { applyDefaultMachine } from '@/lib/payload/hooks/quotes/applyDefaultMachine'
 import { createQuoteGcodes } from '@/lib/payload/hooks/quotes/createQuoteGcodes'
 import { normalizeQuoteCustomer } from '@/lib/payload/hooks/quotes/normalizeQuoteCustomer'
 import { resolveQuoteItemsAndAmount } from '@/lib/payload/hooks/quotes/resolveQuoteItemsAndAmount'
@@ -107,8 +108,7 @@ export const Quotes: CollectionConfig = {
               on: 'quote',
               admin: {
                 allowCreate: false,
-                defaultColumns: ['model', 'material', 'process', 'filament'],
-                description: 'Auto-generated gcode records tied to this quote.',
+                defaultColumns: ['model', 'material', 'process', 'filament', 'machine'],
               },
             },
           ],
@@ -117,6 +117,7 @@ export const Quotes: CollectionConfig = {
     },
   ],
   hooks: {
+    beforeValidate: [applyDefaultMachine],
     beforeChange: [normalizeQuoteCustomer, resolveQuoteItemsAndAmount],
     afterChange: [createQuoteGcodes],
   },

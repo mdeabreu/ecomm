@@ -11,7 +11,7 @@ export const Processes: CollectionConfig = {
     update: adminOnly,
   },
   admin: {
-    defaultColumns: ['name'],
+    defaultColumns: ['name', 'active'],
     group: '3D Printing',
     useAsTitle: 'name',
   },
@@ -21,9 +21,6 @@ export const Processes: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-      admin: {
-        width: '60%',
-      },
     },
     {
       name: 'description',
@@ -36,9 +33,6 @@ export const Processes: CollectionConfig = {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
-      admin: {
-        description: 'Representative photo for this process.',
-      },
     },
     {
       name: 'active',

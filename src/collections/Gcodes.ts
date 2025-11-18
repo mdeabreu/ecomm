@@ -16,18 +16,6 @@ const queueSliceWorkflow: CollectionAfterChangeHook = async ({ doc, operation, r
       queue: 'slicing',
     })
 
-    await req.payload.update({
-      collection: 'gcodes',
-      id: doc.id,
-      data: {
-        sliceJobId: job.id,
-      },
-      depth: 0,
-      context: {
-        skipQueueSliceWorkflow: true,
-      },
-    })
-
     req.payload.jobs.runByID({id: job.id})
     
   } catch (error) {
@@ -52,7 +40,7 @@ export const Gcodes: CollectionConfig = {
   admin: {
     group: '3D Printing',
     useAsTitle: 'id',
-    defaultColumns: ['quote', 'model', 'material', 'process', 'filament'],
+    defaultColumns: ['quote', 'model', 'material', 'process', 'filament', 'machine', 'estimatedWeight', 'estimatedDuration'],
   },
   fields: [
     {
@@ -65,7 +53,7 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '33%',
+            width: '50%',
           },
         },
         {
@@ -75,16 +63,7 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '33%',
-          },
-        },
-        {
-          name: 'sliceJobId',
-          type: 'text',
-          admin: {
-            readOnly: true,
-            description: 'Payload job identifier used to track the slicing workflow.',
-            width: '34%',
+            width: '50%',
           },
         },
       ],
@@ -99,7 +78,7 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '33%',
+            width: '25%',
           },
         },
         {
@@ -109,7 +88,7 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '33%',
+            width: '25%',
           },
         },
         {
@@ -119,29 +98,72 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '34%',
+            width: '25%',
+          },
+        },
+        {
+          name: 'machine',
+          type: 'relationship',
+          relationTo: 'machines',
+          required: true,
+          admin: {
+            readOnly: true,
+            width: '25%',
           },
         },
       ],
     },
     {
-      name: 'estimatedWeight',
-      type: 'number',
-      min: 0,
-      admin: {
-        readOnly: true,
-        description: 'Captured from slicer output (grams).',
-      },
+      type: 'row',
+      fields: [
+        {
+          name: 'estimatedWeight',
+          type: 'number',
+          min: 0,
+          admin: {
+            readOnly: true,
+            description: 'Captured from slicer output (grams).',
+            width: '50%',
+          },
+        },
+        {
+          name: 'estimatedDuration',
+          type: 'number',
+          min: 0,
+          admin: {
+            readOnly: true,
+            description: 'Captured from slicer output (seconds).',
+            width: '50%',
+          },
+        },
+      ],
     },
     {
-      name: 'gcode',
-      label: 'G-code',
-      type: 'code',
+      type: 'collapsible',
+      label: 'Slicer output',
       admin: {
-        readOnly: true,
-        language: 'gcode',
-        description: 'Populated after the slicing job completes.',
+        initCollapsed: true,
       },
+      fields: [
+        {
+          name: 'slicerOutput',
+          type: 'textarea',
+          admin: {
+            readOnly: true,
+            description: 'Stdout/stderr emitted by the slicer.',
+          },
+        },
+        {
+          name: 'gcode',
+          label: 'G-code',
+          type: 'code',
+          admin: {
+            readOnly: true,
+            language: 'gcode',
+            description: 'Captured from slicer output as plain text.',
+          },
+        },
+      ],
     },
   ],
   hooks: {

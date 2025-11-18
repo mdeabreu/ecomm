@@ -66,12 +66,19 @@ export const runSlicerTask: TaskHandler<'runSlicer'> = async ({ input, req }) =>
     modelPath,
   ]
 
+  let slicerOutput = ''
   try {
-    await execFileAsync(ORCA_BINARY, args, {
+    const { stdout, stderr } = await execFileAsync(ORCA_BINARY, args, {
       maxBuffer: 10 * 1024 * 1024,
     })
+    slicerOutput = [stdout, stderr].filter(Boolean).join('\n').trim()
   } catch (error) {
-    throw new Error(`runSlicer: failed to execute OrcaSlicer: ${(error as Error).message}`)
+    const err = error as Error & { stdout?: string; stderr?: string }
+    const combinedOutput = [err.stdout, err.stderr].filter(Boolean).join('\n').trim()
+    const message = combinedOutput
+      ? `${err.message} | Output: ${combinedOutput}`
+      : err.message
+    throw new Error(`runSlicer: failed to execute OrcaSlicer: ${message}`)
   }
 
   let slicedGcodePath: string | undefined
@@ -88,6 +95,7 @@ export const runSlicerTask: TaskHandler<'runSlicer'> = async ({ input, req }) =>
   return {
     output: {
       gcodePath: slicedGcodePath,
+      slicerOutput,
     },
   }
 }

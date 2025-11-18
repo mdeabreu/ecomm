@@ -50,28 +50,26 @@ export const collectSliceContext: TaskHandler<'collectSliceContext'> = async ({ 
   const materialId = resolveRelationID(gcode.material)
   const filamentId = resolveRelationID(gcode.filament)
   const processId = resolveRelationID(gcode.process)
+  const machineId = resolveRelationID(gcode.machine)
 
-  if (!materialId || !filamentId || !processId) {
-    throw new Error('collectSliceContext: gcode is missing material, filament, or process reference')
+  if (!materialId || !filamentId || !processId || !machineId) {
+    throw new Error('collectSliceContext: gcode is missing material, filament, process, or machine reference')
   }
 
-  const [settings, material, filament, processDoc] = await Promise.all([
-    req.payload.findGlobal({ slug: 'settings', depth: 0 }),
+  const [material, filament, processDoc, machine] = await Promise.all([
     req.payload.findByID({ collection: 'materials', id: materialId, depth: 0 }),
     req.payload.findByID({ collection: 'filaments', id: filamentId, depth: 0 }),
     req.payload.findByID({ collection: 'processes', id: processId, depth: 0 }),
+    req.payload.findByID({ collection: 'machines', id: machineId, depth: 0 }),
   ])
 
-  const baseFilament = (isObject(settings.filament) ? settings.filament : {}) as JSONObject
   const materialConfig = (isObject(material.config) ? material.config : {}) as JSONObject
   const filamentConfig = (isObject(filament.config) ? filament.config : {}) as JSONObject
-  const mergedFilament = deepMerge(baseFilament, materialConfig, filamentConfig)
+  const mergedFilament = deepMerge(materialConfig, filamentConfig)
 
-  const baseProcess = (isObject(settings.process) ? settings.process : {}) as JSONObject
   const processConfig = (isObject(processDoc.config) ? processDoc.config : {}) as JSONObject
-  const mergedProcess = deepMerge(baseProcess, processConfig)
-
-  const machineConfig = (isObject(settings.machine) ? settings.machine : {}) as JSONObject
+  const mergedProcess = deepMerge(processConfig)
+  const machineConfig = (isObject(machine.config) ? machine.config : {}) as JSONObject
 
   const dir = path.join(process.cwd(), 'data', 'tmp', 'slicing', String(gcodeId))
 

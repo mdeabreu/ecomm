@@ -164,12 +164,10 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
-    settings: Setting;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
-    settings: SettingsSelect<false> | SettingsSelect<true>;
   };
   locale: null;
   user: User & {
@@ -1086,14 +1084,8 @@ export interface Material {
    * Short public blurb shown in the material library.
    */
   description?: string | null;
-  /**
-   * Representative photo of a printed part or spool.
-   */
   image?: (number | null) | Media;
-  /**
-   * Optional override; fallback is the Settings price per gram
-   */
-  pricePerGram?: number | null;
+  pricePerGram: number;
   /**
    * JSON blob describing printer settings (e.g., {"nozzleTemp": 210})
    */
@@ -1195,6 +1187,10 @@ export interface Machine {
   _order?: string | null;
   name: string;
   /**
+   * Uncheck to hide this machine from selections
+   */
+  active: boolean;
+  /**
    * JSON definition for machine-specific settings.
    */
   config:
@@ -1220,9 +1216,6 @@ export interface Process {
    * Public summary shown in the process library.
    */
   description?: string | null;
-  /**
-   * Representative photo for this process.
-   */
   image?: (number | null) | Media;
   /**
    * Uncheck to hide this process from customer-facing selectors
@@ -1251,19 +1244,24 @@ export interface Gcode {
   id: number;
   quote: number | Quote;
   model: number | Model;
-  /**
-   * Payload job identifier used to track the slicing workflow.
-   */
-  sliceJobId?: string | null;
   material: number | Material;
   process: number | Process;
   filament: number | Filament;
+  machine: number | Machine;
   /**
    * Captured from slicer output (grams).
    */
   estimatedWeight?: number | null;
   /**
-   * Populated after the slicing job completes.
+   * Captured from slicer output (seconds).
+   */
+  estimatedDuration?: number | null;
+  /**
+   * Stdout/stderr emitted by the slicer.
+   */
+  slicerOutput?: string | null;
+  /**
+   * Captured from slicer output as plain text.
    */
   gcode?: string | null;
   updatedAt: string;
@@ -1290,11 +1288,10 @@ export interface Quote {
     colour: number | Colour;
     process: number | Process;
     filament?: (number | null) | Filament;
+    machine?: (number | null) | Machine;
     gcode?: (number | null) | Gcode;
-    /**
-     * Derived from linked gcode estimate.
-     */
     grams?: number | null;
+    duration?: number | null;
     lineAmount?: number | null;
     priceOverride?: number | null;
     id?: string | null;
@@ -1303,9 +1300,6 @@ export interface Quote {
    * Optional requirements, deadlines, or context provided by the requester.
    */
   notes?: string | null;
-  /**
-   * Auto-generated gcode records tied to this quote.
-   */
   gcodes?: {
     docs?: (number | Gcode)[];
     hasNextPage?: boolean;
@@ -1851,6 +1845,7 @@ export interface MaterialsSelect<T extends boolean = true> {
 export interface MachinesSelect<T extends boolean = true> {
   _order?: T;
   name?: T;
+  active?: T;
   config?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1875,11 +1870,13 @@ export interface ProcessesSelect<T extends boolean = true> {
 export interface GcodesSelect<T extends boolean = true> {
   quote?: T;
   model?: T;
-  sliceJobId?: T;
   material?: T;
   process?: T;
   filament?: T;
+  machine?: T;
   estimatedWeight?: T;
+  estimatedDuration?: T;
+  slicerOutput?: T;
   gcode?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1965,8 +1962,10 @@ export interface QuotesSelect<T extends boolean = true> {
         colour?: T;
         process?: T;
         filament?: T;
+        machine?: T;
         gcode?: T;
         grams?: T;
+        duration?: T;
         lineAmount?: T;
         priceOverride?: T;
         id?: T;
@@ -2473,55 +2472,6 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings".
- */
-export interface Setting {
-  id: number;
-  /**
-   * Baseline price per gram used when a material does not override it
-   */
-  pricePerGram: number;
-  /**
-   * Default printer machine settings JSON
-   */
-  machine:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Standard process parameters JSON
-   */
-  process:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Baseline filament configuration JSON
-   */
-  filament:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2562,19 +2512,6 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  updatedAt?: T;
-  createdAt?: T;
-  globalType?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings_select".
- */
-export interface SettingsSelect<T extends boolean = true> {
-  pricePerGram?: T;
-  machine?: T;
-  process?: T;
-  filament?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

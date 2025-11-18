@@ -7,10 +7,11 @@ type GcodeKey = {
   material: number | string
   model: number | string
   process: number | string
+  machine: number | string
 }
 
-const buildKey = ({ filament, material, model, process }: GcodeKey): string => {
-  return [model, material, process, filament].map(String).join(':')
+const buildKey = ({ filament, material, model, process, machine }: GcodeKey): string => {
+  return [model, material, process, filament, machine].map(String).join(':')
 }
 
 export const createQuoteGcodes: CollectionAfterChangeHook = async ({
@@ -36,13 +37,14 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
     const material = resolveRelationID(item.material)
     const process = resolveRelationID(item.process)
     const filament = resolveRelationID(item.filament)
+    const machine = resolveRelationID(item.machine)
 
-    if (!model || !material || !process || !filament) {
+    if (!model || !material || !process || !filament || !machine) {
       continue
     }
 
-    const key = buildKey({ filament, material, model, process })
-    combinations.set(key, { filament, material, model, process })
+    const key = buildKey({ filament, material, model, process, machine })
+    combinations.set(key, { filament, material, model, process, machine })
   }
 
   if (combinations.size === 0) {
@@ -83,6 +85,11 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
               equals: combo.filament,
             },
           },
+          {
+            machine: {
+              equals: combo.machine,
+            },
+          },
         ],
       },
     })
@@ -101,6 +108,7 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
         material: combo.material,
         process: combo.process,
         filament: combo.filament,
+        machine: combo.machine,
       },
     })
 
@@ -119,12 +127,13 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
     const material = resolveRelationID(item.material)
     const process = resolveRelationID(item.process)
     const filament = resolveRelationID(item.filament)
+    const machine = resolveRelationID(item.machine)
 
-    if (!model || !material || !process || !filament) {
+    if (!model || !material || !process || !filament || !machine) {
       return item
     }
 
-    const comboKey = buildKey({ filament, material, model, process })
+    const comboKey = buildKey({ filament, material, model, process, machine })
     const gcodeID = comboToGcodeID.get(comboKey)
 
     const currentGcodeID = resolveRelationID(item.gcode)

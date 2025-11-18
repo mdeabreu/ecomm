@@ -11,7 +11,7 @@ export const Machines: CollectionConfig = {
     update: adminOnly,
   },
   admin: {
-    defaultColumns: ['name'],
+    defaultColumns: ['name', 'active'],
     group: '3D Printing',
     useAsTitle: 'name',
   },
@@ -21,18 +21,34 @@ export const Machines: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
+    },
+    {
+      name: 'active',
+      type: 'checkbox',
+      defaultValue: true,
+      required: true,
       admin: {
-        width: '60%',
+        description: 'Uncheck to hide this machine from selections',
+        position: 'sidebar',
       },
     },
     {
-      name: 'config',
-      type: 'json',
-      required: true,
-      defaultValue: {},
+      type: 'collapsible',
+      label: 'Machine configuration',
       admin: {
-        description: 'JSON definition for machine-specific settings.',
+        initCollapsed: true,
       },
+      fields: [
+        {
+          name: 'config',
+          type: 'json',
+          required: true,
+          defaultValue: {},
+          admin: {
+            description: 'JSON definition for machine-specific settings.',
+          },
+        },
+      ],
     },
   ],
   orderable: true,

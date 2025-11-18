@@ -23,9 +23,6 @@ export const Vendors: CollectionConfig = {
           name: 'name',
           type: 'text',
           required: true,
-          admin: {
-            width: '40%',
-          },
         },
         {
           name: 'url',
@@ -33,18 +30,6 @@ export const Vendors: CollectionConfig = {
           required: true,
           admin: {
             description: 'Public storefront or vendor URL',
-            width: '60%',
-          },
-          validate: (value) => {
-            if (!value) return 'URL is required'
-
-            try {
-              // Throws if the URL is invalid
-              new URL(value)
-              return true
-            } catch {
-              return 'Enter a valid URL (include protocol)'
-            }
           },
         },
       ],

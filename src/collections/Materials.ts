@@ -36,16 +36,13 @@ export const Materials: CollectionConfig = {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
-      admin: {
-        description: 'Representative photo of a printed part or spool.',
-      },
     },
     {
       name: 'pricePerGram',
       type: 'number',
+      required: true,
       min: 0,
       admin: {
-        description: 'Optional override; fallback is the Settings price per gram',
         position: 'sidebar',
       },
     },

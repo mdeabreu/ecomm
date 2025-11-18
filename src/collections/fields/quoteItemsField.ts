@@ -144,7 +144,7 @@ export const quoteItemsField = (): Field => ({
           relationTo: 'processes',
           required: true,
           admin: {
-            width: '33%',
+            width: '34%',
           },
           filterOptions: () => {
             return {
@@ -157,44 +157,65 @@ export const quoteItemsField = (): Field => ({
       ],
     },
     {
-      name: 'filament',
-      type: 'relationship',
-      relationTo: 'filaments',
-      admin: {
-        position: 'sidebar',
-      },
-      filterOptions: ({ siblingData }) => {
-        const material = resolveRelationID(siblingData?.material)
-        const colour = resolveRelationID(siblingData?.colour)
-
-        const constraints = [
-          {
-            active: {
-              equals: true,
-            },
+      type: 'row',
+      fields: [
+        {
+          name: 'filament',
+          type: 'relationship',
+          relationTo: 'filaments',
+          admin: {
+            position: 'sidebar',
+            width: '50%',
           },
-        ]
+          filterOptions: ({ siblingData }) => {
+            const material = resolveRelationID(siblingData?.material)
+            const colour = resolveRelationID(siblingData?.colour)
 
-        if (material) {
-          constraints.push({
-            material: {
-              equals: material,
-            },
-          })
-        }
+            const constraints = [
+              {
+                active: {
+                  equals: true,
+                },
+              },
+            ]
 
-        if (colour) {
-          constraints.push({
-            colour: {
-              equals: colour,
-            },
-          })
-        }
+            if (material) {
+              constraints.push({
+                material: {
+                  equals: material,
+                },
+              })
+            }
 
-        return {
-          and: constraints,
-        }
-      },
+            if (colour) {
+              constraints.push({
+                colour: {
+                  equals: colour,
+                },
+              })
+            }
+
+            return {
+              and: constraints,
+            }
+          },
+        },
+        {
+          name: 'machine',
+          type: 'relationship',
+          relationTo: 'machines',
+          admin: {
+            width: '50%',
+          },
+          filterOptions: () => {
+            return {
+              active: {
+                equals: true,
+              },
+            }
+          },
+        },
+      ],
     },
     {
       type: 'row',
@@ -205,7 +226,7 @@ export const quoteItemsField = (): Field => ({
           relationTo: 'gcodes',
           admin: {
             readOnly: true,
-            width: '25%'
+            width: '33%',
           },
         },
         {
@@ -238,11 +259,49 @@ export const quoteItemsField = (): Field => ({
             }],
           },
           admin: {
-            description: 'Derived from linked gcode estimate.',
-            width: '25%',
+            width: '33%',
             readOnly: true,
           },
         },
+        {
+          name: 'duration',
+          type: 'number',
+          min: 0,
+          hooks: {
+            afterRead: [async ({ siblingData, req, value }) => {
+              const gcodeId = resolveRelationID(siblingData?.gcode)
+
+              if (!gcodeId) {
+                return value
+              }
+
+              try {
+                const gcode = await req.payload.findByID({
+                  collection: 'gcodes',
+                  id: gcodeId,
+                  depth: 0,
+                })
+
+                if (typeof gcode.estimatedDuration === 'number') {
+                  return gcode.estimatedDuration
+                }
+              } catch {
+                // ignore and fall back to existing value
+              }
+
+              return value
+            }],
+          },
+          admin: {
+            width: '34%',
+            readOnly: true,
+          },
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
         amountField({
           currenciesConfig: ecommerceCurrenciesConfig,
           overrides: {
@@ -250,7 +309,7 @@ export const quoteItemsField = (): Field => ({
             label: 'Subtotal',
             admin: {
               readOnly: true,
-              width: '25%',
+              width: '50%',
             },
           },
         }),
@@ -261,7 +320,7 @@ export const quoteItemsField = (): Field => ({
             label: 'Price override',
             min: 0,
             admin: {
-              width: '25%',
+              width: '50%',
             },
           },
         }),
