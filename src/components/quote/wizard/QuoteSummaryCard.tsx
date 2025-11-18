@@ -10,6 +10,7 @@ type QuoteSummaryItem = {
   meta?: React.ReactNode
   name: string
   size?: number
+  weightGrams?: number
   variant?: 'default' | 'muted'
 }
 
@@ -43,6 +44,7 @@ export const QuoteSummaryCard: React.FC<QuoteSummaryCardProps> = ({
             meta={item.meta}
             name={item.name}
             size={item.size}
+            weightGrams={item.weightGrams}
             variant={item.variant}
           >
             <dl className="grid gap-2 text-xs md:grid-cols-4">

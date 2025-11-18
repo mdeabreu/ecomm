@@ -1,6 +1,41 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionAfterChangeHook, CollectionConfig } from 'payload'
 
 import { adminOnly } from '@/access/adminOnly'
+
+const queueSliceWorkflow: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
+  if (!doc || operation !== 'create' || req.context?.skipQueueSliceWorkflow) {
+    return doc
+  }
+
+  try {
+    const job = await req.payload.jobs.queue({
+      workflow: 'sliceGcode',
+      input: {
+        gcodeId: doc.id,
+      },
+      queue: 'slicing',
+    })
+
+    await req.payload.update({
+      collection: 'gcodes',
+      id: doc.id,
+      data: {
+        sliceJobId: job.id,
+      },
+      depth: 0,
+      context: {
+        skipQueueSliceWorkflow: true,
+      },
+    })
+
+    req.payload.jobs.runByID({id: job.id})
+    
+  } catch (error) {
+    req.payload.logger.error('Failed to queue slicing workflow', error)
+  }
+
+  return doc
+}
 
 export const Gcodes: CollectionConfig = {
   slug: 'gcodes',
@@ -109,4 +144,7 @@ export const Gcodes: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [queueSliceWorkflow],
+  },
 }

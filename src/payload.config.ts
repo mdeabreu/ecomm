@@ -20,17 +20,21 @@ import { Categories } from '@/collections/Categories'
 import { Colours } from '@/collections/Colours'
 import { Filaments } from '@/collections/Filaments'
 import { Gcodes } from '@/collections/Gcodes'
-import { Models } from '@/collections/Models'
-import { Quotes } from '@/collections/Quotes'
-import { Media } from '@/collections/Media'
-import { Pages } from '@/collections/Pages'
-import { Users } from '@/collections/Users'
 import { Materials } from '@/collections/Materials'
-import { Vendors } from '@/collections/Vendors'
+import { Media } from '@/collections/Media'
+import { Models } from '@/collections/Models'
+import { Pages } from '@/collections/Pages'
 import { Processes } from '@/collections/Processes'
+import { Quotes } from '@/collections/Quotes'
+import { Users } from '@/collections/Users'
+import { Vendors } from '@/collections/Vendors'
 import { Footer } from '@/globals/Footer'
 import { Header } from '@/globals/Header'
 import { Settings } from '@/globals/Settings'
+import { collectSliceContext } from '@/lib/jobs/tasks/collectSliceContext'
+import { parseGcodeTask } from '@/lib/jobs/tasks/parseGcodeTask'
+import { runSlicerTask } from '@/lib/jobs/tasks/runSlicerTask'
+import { sliceGcodeWorkflow } from '@/lib/jobs/workflows/sliceGcode'
 import { plugins } from './plugins'
 
 const filename = fileURLToPath(import.meta.url)
@@ -110,6 +114,115 @@ export default buildConfig({
     // storage-adapter-placeholder
   ],
   secret: process.env.PAYLOAD_SECRET || '',
+  jobs: {
+    jobsCollectionOverrides: ({defaultJobsCollection}) => {
+      if (!defaultJobsCollection.admin) {
+        defaultJobsCollection.admin = {}
+      }
+      defaultJobsCollection.admin.hidden = false
+      return defaultJobsCollection
+    },
+    autoRun: [
+      {
+        cron: '* * * * *',
+        queue: 'slicing',
+      },
+    ],
+    tasks: [
+      {
+        slug: 'collectSliceContext',
+        inputSchema: [
+          {
+            name: 'gcodeId',
+            type: 'text',
+            required: true,
+          },
+        ],
+        outputSchema: [
+          {
+            name: 'filamentConfigPath',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'processConfigPath',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'machineConfigPath',
+            type: 'text',
+            required: true,
+          },
+        ],
+        handler: collectSliceContext,
+      },
+      {
+        slug: 'runSlicer',
+        inputSchema: [
+          {
+            name: 'gcodeId',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'filamentConfigPath',
+            type: 'text',
+            required: false,
+          },
+          {
+            name: 'processConfigPath',
+            type: 'text',
+            required: false,
+          },
+          {
+            name: 'machineConfigPath',
+            type: 'text',
+            required: false,
+          },
+        ],
+        outputSchema: [
+          {
+            name: 'gcodePath',
+            type: 'text',
+            required: true,
+          },
+        ],
+        handler: runSlicerTask,
+      },
+      {
+        slug: 'parseGcode',
+        inputSchema: [
+          {
+            name: 'gcodeId',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'gcodePath',
+            type: 'text',
+            required: false,
+          },
+        ],
+        handler: parseGcodeTask,
+      },
+    ],
+    workflows: [
+      {
+        slug: 'sliceGcode',
+        queue: 'slicing',
+        retries: 5,
+        inputSchema: [
+          {
+            name: 'gcodeId',
+            type: 'text',
+            required: true,
+          },
+        ],
+        handler: sliceGcodeWorkflow,
+      },
+    ],
+  },
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },

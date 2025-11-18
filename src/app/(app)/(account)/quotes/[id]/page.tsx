@@ -58,6 +58,7 @@ type QuoteItemDetail = {
   model: Model | null
   process: Process | null
   quantity: number
+  grams?: number | null
   lineAmount?: number | null
 }
 
@@ -196,6 +197,8 @@ export default async function Quote({ params, searchParams }: PageProps) {
         typeof item.quantity === 'number' && Number.isFinite(item.quantity) && item.quantity > 0
           ? Math.floor(item.quantity)
           : 1
+      const grams =
+        typeof item.grams === 'number' && Number.isFinite(item.grams) ? item.grams : null
 
       const keyCandidate =
         typeof item.id === 'string' || typeof item.id === 'number'
@@ -210,6 +213,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
         process,
         quantity,
         lineAmount: typeof item.lineAmount === 'number' ? item.lineAmount : null,
+        grams,
       }
     })
     .filter((item): item is QuoteItemDetail => item !== null)
@@ -223,6 +227,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
       typeof item.model?.filesize === 'number' && item.model.filesize > 0
         ? item.model.filesize
         : undefined
+    const weightGrams = typeof item.grams === 'number' ? item.grams : undefined
     const uploadedAt = item.model?.createdAt
     const colourSwatches = extractSwatches(item.colour?.swatches ?? [])
     const lineAmount = typeof item.lineAmount === 'number' ? item.lineAmount : undefined
@@ -265,6 +270,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
         ) : undefined,
       name: modelFilename,
       size: fileSize,
+      weightGrams,
     }
   })
 

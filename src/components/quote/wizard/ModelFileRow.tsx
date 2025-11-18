@@ -9,6 +9,7 @@ type ModelFileRowProps = {
   name: string
   size?: number
   subtitle?: React.ReactNode
+  weightGrams?: number
   variant?: 'muted' | 'default'
 }
 
@@ -19,8 +20,14 @@ export const ModelFileRow: React.FC<ModelFileRowProps> = ({
   name,
   size,
   subtitle,
+  weightGrams,
   variant = 'default',
 }) => {
+  const hasSize = typeof size === 'number'
+  const hasWeight = typeof weightGrams === 'number'
+  const sizeText = hasSize ? formatFileSize(size) : null
+  const weightText = hasWeight ? `${weightGrams.toFixed(2)} g` : null
+
   return (
     <li
       className={cn('space-y-3 rounded-lg border px-4 py-3 text-sm', {
@@ -32,8 +39,10 @@ export const ModelFileRow: React.FC<ModelFileRowProps> = ({
         <div className="flex flex-col gap-1">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-sm font-semibold">{name}</span>
-            {typeof size === 'number' ? (
-              <span className="text-xs text-muted-foreground">{formatFileSize(size)}</span>
+            {sizeText || weightText ? (
+              <span className="text-xs text-muted-foreground">
+                {[sizeText, weightText].filter(Boolean).join(' · ')}
+              </span>
             ) : null}
           </div>
           {subtitle ? <span className="text-xs text-muted-foreground">{subtitle}</span> : null}

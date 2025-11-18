@@ -212,8 +212,35 @@ export const quoteItemsField = (): Field => ({
           name: 'grams',
           type: 'number',
           min: 0,
+          hooks: {
+            afterRead: [async ({ siblingData, req, value }) => {
+              const gcodeId = resolveRelationID(siblingData?.gcode)
+
+              if (!gcodeId) {
+                return value
+              }
+
+              try {
+                const gcode = await req.payload.findByID({
+                  collection: 'gcodes',
+                  id: gcodeId,
+                  depth: 0,
+                })
+
+                if (typeof gcode.estimatedWeight === 'number') {
+                  return gcode.estimatedWeight
+                }
+              } catch {
+                // ignore and fall back to existing value
+              }
+
+              return value
+            }],
+          },
           admin: {
+            description: 'Derived from linked gcode estimate.',
             width: '25%',
+            readOnly: true,
           },
         },
         amountField({
