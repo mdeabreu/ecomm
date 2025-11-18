@@ -82,6 +82,7 @@ export interface Config {
     categories: Category;
     vendors: Vendor;
     materials: Material;
+    machines: Machine;
     processes: Process;
     gcodes: Gcode;
     colours: Colour;
@@ -133,6 +134,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     vendors: VendorsSelect<false> | VendorsSelect<true>;
     materials: MaterialsSelect<false> | MaterialsSelect<true>;
+    machines: MachinesSelect<false> | MachinesSelect<true>;
     processes: ProcessesSelect<false> | ProcessesSelect<true>;
     gcodes: GcodesSelect<false> | GcodesSelect<true>;
     colours: ColoursSelect<false> | ColoursSelect<true>;
@@ -1186,6 +1188,29 @@ export interface Colour {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "machines".
+ */
+export interface Machine {
+  id: number;
+  _order?: string | null;
+  name: string;
+  /**
+   * JSON definition for machine-specific settings.
+   */
+  config:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "processes".
  */
 export interface Process {
@@ -1462,6 +1487,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'materials';
         value: number | Material;
+      } | null)
+    | ({
+        relationTo: 'machines';
+        value: number | Machine;
       } | null)
     | ({
         relationTo: 'processes';
@@ -1812,6 +1841,17 @@ export interface MaterialsSelect<T extends boolean = true> {
   pricePerGram?: T;
   config?: T;
   filaments?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "machines_select".
+ */
+export interface MachinesSelect<T extends boolean = true> {
+  _order?: T;
+  name?: T;
+  config?: T;
   updatedAt?: T;
   createdAt?: T;
 }

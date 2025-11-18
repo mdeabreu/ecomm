@@ -21,6 +21,7 @@ import { Colours } from '@/collections/Colours'
 import { Filaments } from '@/collections/Filaments'
 import { Gcodes } from '@/collections/Gcodes'
 import { Materials } from '@/collections/Materials'
+import { Machines } from '@/collections/Machines'
 import { Media } from '@/collections/Media'
 import { Models } from '@/collections/Models'
 import { Pages } from '@/collections/Pages'
@@ -58,6 +59,7 @@ export default buildConfig({
     Categories,
     Vendors,
     Materials,
+    Machines,
     Processes,
     Gcodes,
     Colours,
