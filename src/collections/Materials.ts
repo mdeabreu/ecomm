@@ -12,7 +12,7 @@ export const Materials: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'pricePerGram'],
-    group: '3D Printing',
+    group: 'Inventory',
     useAsTitle: 'name',
   },
   fields: [
@@ -21,9 +21,6 @@ export const Materials: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-      admin: {
-        width: '60%',
-      },
     },
     {
       name: 'description',
@@ -66,9 +63,8 @@ export const Materials: CollectionConfig = {
     },
     {
       type: 'collapsible',
-      label: 'Linked filaments',
+      label: 'Filaments',
       admin: {
-        description: 'Preview filament records that reference this material',
         initCollapsed: true,
       },
       fields: [

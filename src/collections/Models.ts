@@ -24,7 +24,7 @@ export const Models: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['originalFilename', 'filename', 'customer'],
-    group: '3D Printing',
+    group: 'Jobs',
     useAsTitle: 'originalFilename',
   },
   fields: [

@@ -12,7 +12,7 @@ export const Filaments: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'material', 'vendor', 'colour'],
-    group: '3D Printing',
+    group: 'Inventory',
     useAsTitle: 'name',
   },
   fields: [
@@ -40,27 +40,18 @@ export const Filaments: CollectionConfig = {
           type: 'relationship',
           relationTo: 'materials',
           required: true,
-          admin: {
-            width: '33%',
-          },
         },
         {
           name: 'vendor',
           type: 'relationship',
           relationTo: 'vendors',
           required: true,
-          admin: {
-            width: '33%',
-          },
         },
         {
           name: 'colour',
           type: 'relationship',
           relationTo: 'colours',
           required: true,
-          admin: {
-            width: '34%',
-          },
         },
       ],
     },
@@ -105,17 +96,28 @@ export const Filaments: CollectionConfig = {
                   name: 'date',
                   type: 'date',
                   required: true,
-                  admin: {
-                    width: '40%',
-                  },
                 },
+                {
+                  name: 'pricePerUnit',
+                  type: 'number',
+                  min: 0,
+                  required: true,
+                },
+                {
+                  name: 'unitsPurchased',
+                  type: 'number',
+                  min: 1,
+                  required: true,
+                },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
                 {
                   name: 'url',
                   type: 'text',
                   required: true,
-                  admin: {
-                    width: '60%',
-                  },
                   validate: (value) => {
                     if (!value) return 'URL is required'
                     try {
@@ -124,29 +126,6 @@ export const Filaments: CollectionConfig = {
                     } catch {
                       return 'Enter a valid purchase URL'
                     }
-                  },
-                },
-              ],
-            },
-            {
-              type: 'row',
-              fields: [
-                {
-                  name: 'pricePerUnit',
-                  type: 'number',
-                  min: 0,
-                  required: true,
-                  admin: {
-                    width: '50%',
-                  },
-                },
-                {
-                  name: 'unitsPurchased',
-                  type: 'number',
-                  min: 1,
-                  required: true,
-                  admin: {
-                    width: '50%',
                   },
                 },
               ],

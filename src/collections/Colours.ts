@@ -12,7 +12,7 @@ export const Colours: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'finish', 'type'],
-    group: '3D Printing',
+    group: 'Inventory',
     useAsTitle: 'name',
   },
   fields: [
@@ -21,9 +21,6 @@ export const Colours: CollectionConfig = {
       type: 'text',
       required: true,
       unique: true,
-      admin: {
-        width: '50%',
-      },
     },
     {
       name: 'description',
@@ -36,9 +33,6 @@ export const Colours: CollectionConfig = {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
-      admin: {
-        description: 'Use a lifestyle or spool photo to represent this colour.',
-      },
     },
     {
       name: 'finish',
@@ -90,7 +84,6 @@ export const Colours: CollectionConfig = {
               required: true,
               admin: {
                 description: 'Hex value including #, e.g. #FFAA00',
-                width: '50%',
               },
               validate: (value) => {
                 if (typeof value !== 'string') return 'Provide a valid hex code'
@@ -104,13 +97,22 @@ export const Colours: CollectionConfig = {
       ],
     },
     {
-      name: 'filaments',
-      type: 'join',
-      collection: 'filaments',
-      on: 'colour',
+      type: 'collapsible',
+      label: 'Filaments',
       admin: {
-        defaultColumns: ['name', 'active'],
+        initCollapsed: true,
       },
+      fields: [
+        {
+          name: 'filaments',
+          type: 'join',
+          collection: 'filaments',
+          on: 'colour',
+          admin: {
+            defaultColumns: ['name', 'active'],
+          },
+        },
+      ],
     },
   ],
 }

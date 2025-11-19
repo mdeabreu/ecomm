@@ -38,7 +38,7 @@ export const Gcodes: CollectionConfig = {
     update: adminOnly,
   },
   admin: {
-    group: '3D Printing',
+    group: 'Jobs',
     useAsTitle: 'id',
     defaultColumns: ['quote', 'model', 'material', 'process', 'filament', 'machine', 'estimatedWeight', 'estimatedDuration'],
   },
@@ -78,17 +78,6 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '25%',
-          },
-        },
-        {
-          name: 'process',
-          type: 'relationship',
-          relationTo: 'processes',
-          required: true,
-          admin: {
-            readOnly: true,
-            width: '25%',
           },
         },
         {
@@ -98,7 +87,15 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '25%',
+          },
+        },
+        {
+          name: 'process',
+          type: 'relationship',
+          relationTo: 'processes',
+          required: true,
+          admin: {
+            readOnly: true,
           },
         },
         {
@@ -108,7 +105,6 @@ export const Gcodes: CollectionConfig = {
           required: true,
           admin: {
             readOnly: true,
-            width: '25%',
           },
         },
       ],
@@ -123,7 +119,6 @@ export const Gcodes: CollectionConfig = {
           admin: {
             readOnly: true,
             description: 'Captured from slicer output (grams).',
-            width: '50%',
           },
         },
         {
@@ -133,7 +128,6 @@ export const Gcodes: CollectionConfig = {
           admin: {
             readOnly: true,
             description: 'Captured from slicer output (seconds).',
-            width: '50%',
           },
         },
       ],

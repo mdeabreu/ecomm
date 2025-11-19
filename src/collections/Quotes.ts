@@ -25,7 +25,7 @@ export const Quotes: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['status', 'amount', 'customerEmail'],
-    group: '3D Printing',
+    group: 'Jobs',
     useAsTitle: 'id',
   },
   fields: [

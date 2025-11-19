@@ -1135,9 +1135,9 @@ export interface Filament {
   purchases?:
     | {
         date: string;
-        url: string;
         pricePerUnit: number;
         unitsPurchased: number;
+        url: string;
         id?: string | null;
       }[]
     | null;
@@ -1155,9 +1155,6 @@ export interface Colour {
    * Optional blurb displayed in the public colour library.
    */
   description?: string | null;
-  /**
-   * Use a lifestyle or spool photo to represent this colour.
-   */
   image?: (number | null) | Media;
   finish: 'regular' | 'matte' | 'silk';
   type: 'solid' | 'co-extrusion' | 'gradient';
@@ -1245,8 +1242,8 @@ export interface Gcode {
   quote: number | Quote;
   model: number | Model;
   material: number | Material;
-  process: number | Process;
   filament: number | Filament;
+  process: number | Process;
   machine: number | Machine;
   /**
    * Captured from slicer output (grams).
@@ -1871,8 +1868,8 @@ export interface GcodesSelect<T extends boolean = true> {
   quote?: T;
   model?: T;
   material?: T;
-  process?: T;
   filament?: T;
+  process?: T;
   machine?: T;
   estimatedWeight?: T;
   estimatedDuration?: T;
@@ -1916,9 +1913,9 @@ export interface FilamentsSelect<T extends boolean = true> {
     | T
     | {
         date?: T;
-        url?: T;
         pricePerUnit?: T;
         unitsPurchased?: T;
+        url?: T;
         id?: T;
       };
   updatedAt?: T;

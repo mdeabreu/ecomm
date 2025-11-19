@@ -12,7 +12,7 @@ export const Vendors: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'url'],
-    group: '3D Printing',
+    group: 'Inventory',
     useAsTitle: 'name',
   },
   fields: [

@@ -12,7 +12,7 @@ export const Machines: CollectionConfig = {
   },
   admin: {
     defaultColumns: ['name', 'active'],
-    group: '3D Printing',
+    group: 'Production',
     useAsTitle: 'name',
   },
   fields: [
