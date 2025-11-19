@@ -11,29 +11,18 @@ export const metadata = {
 export default async function MaterialsPage() {
   const payload = await getPayload({ config: configPromise })
 
-  const [materials, settings] = await Promise.all([
-    payload.find({
-      collection: 'materials',
-      depth: 1,
-      limit: 200,
-      overrideAccess: false,
-      sort: 'name',
-      where: {
-        'filaments.active': {
-          equals: true,
-        },
+  const materials = await payload.find({
+    collection: 'materials',
+    depth: 1,
+    limit: 200,
+    overrideAccess: false,
+    sort: 'name',
+    where: {
+      'filaments.active': {
+        equals: true,
       },
-    }),
-    payload.findGlobal({
-      select: {
-        pricePerGram: true,
-      },
-      slug: 'settings',
-    }),
-  ])
-
-  const settingsPricePerGram =
-    typeof settings?.pricePerGram === 'number' ? settings.pricePerGram : null
+    },
+  })
 
   return (
     <div className="container py-10 md:py-16">
@@ -54,9 +43,7 @@ export default async function MaterialsPage() {
               image={material.image}
               name={material.name}
               pricePerGram={
-                typeof material.pricePerGram === 'number'
-                  ? material.pricePerGram
-                  : settingsPricePerGram
+                typeof material.pricePerGram === 'number' ? material.pricePerGram : null
               }
             />
           ))}

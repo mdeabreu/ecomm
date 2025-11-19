@@ -12,19 +12,6 @@ export const resolveQuoteItemsAndAmount: CollectionBeforeChangeHook = async ({ d
     const filamentCache = new Map<string, number | string | null>()
     const materialPriceCache = new Map<string, number | null>()
 
-    let defaultPricePerGram = 0
-    try {
-      const settings = await req.payload.findGlobal({
-        slug: 'settings',
-        depth: 0,
-      })
-      if (settings && typeof settings.pricePerGram === 'number') {
-        defaultPricePerGram = settings.pricePerGram
-      }
-    } catch {
-      defaultPricePerGram = 0
-    }
-
     const normalizedItems: typeof data.items = []
 
     for (const item of data.items) {
@@ -83,7 +70,7 @@ export const resolveQuoteItemsAndAmount: CollectionBeforeChangeHook = async ({ d
         const overrideValue = Math.max(0, item.priceOverride as number)
         lineAmount = overrideValue * quantity
       } else if (grams > 0) {
-        let pricePerGram = defaultPricePerGram
+        let pricePerGram = 0
         if (material) {
           const materialKey = String(material)
 
