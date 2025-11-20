@@ -38,6 +38,7 @@ const collections: CollectionSlug[] = [
   'transactions',
   'addresses',
   'orders',
+  'gcodes',
   'quotes',
   'filaments',
   'vendors',
@@ -45,6 +46,7 @@ const collections: CollectionSlug[] = [
   'processes',
   'colours',
   'models',
+  'machines',
 ]
 
 const categories = ['Accessories', 'T-Shirts', 'Hats']
@@ -290,7 +292,14 @@ export const seed = async ({
         name: 'PLA+',
         description: 'Balanced everyday filament for prototypes, fixtures, and aesthetic parts.',
         image: imagePla.id,
-        config: {},
+        config: {
+          "type": "filament",
+          "name": "Generic PLA",
+          "from": "system",
+          "filament_density": [
+            "1.24"
+          ]
+        },
         pricePerGram: 0.05,
       },
     }),
@@ -300,7 +309,14 @@ export const seed = async ({
         name: 'PETG',
         description: 'Tough, water-resistant filament ideal for functional prints and enclosures.',
         image: imagePetg.id,
-        config: {},
+        config: {
+          "type": "filament",
+          "name": "Generic PLA",
+          "from": "system",
+          "filament_density": [
+            "1.27"
+          ]
+        },
         pricePerGram: 0.07,
       },
     }),
@@ -314,7 +330,15 @@ export const seed = async ({
         active: true,
         description: 'Fastest turnaround with coarse layers—perfect for fit checks and prototypes.',
         image: imageDraft.id,
-        config: {},
+        config:
+        {
+          "type": "process",
+          "name": "0.20mm Standard @BBL X1C",
+          "from": "system",
+          "compatible_printers": [
+            "Bambu Lab P1S 0.4 nozzle"
+          ]
+        },
       },
     }),
     payload.create({
@@ -324,7 +348,58 @@ export const seed = async ({
         active: true,
         description: 'Balanced strength and finish for end-use parts with moderate lead times.',
         image: imageQuality.id,
-        config: {},
+        config:
+        {
+          "type": "process",
+          "name": "0.20mm Standard @BBL X1C",
+          "from": "system",
+          "compatible_printers": [
+            "Bambu Lab P1S 0.4 nozzle"
+          ]
+        },
+      },
+    }),
+  ])
+
+  await Promise.all([
+    payload.create({
+      collection: 'machines',
+      data: {
+        name: 'Prusa MK4',
+        active: true,
+        config: {
+          "type": "machine",
+          "name": "Bambu Lab P1S 0.4 nozzle",
+          "from": "system",
+          "printable_height": "250",
+          "printable_area": [
+            "0x0",
+            "256x0",
+            "256x256",
+            "0x256"
+          ],
+          "layer_change_gcode": "G92 E0" 
+        }
+      },
+    }),
+    payload.create({
+      collection: 'machines',
+      data: {
+        name: 'Bambu Lab P1S',
+        active: true,
+        config: {
+          "type": "machine",
+          "name": "Bambu Lab P1S 0.4 nozzle",
+          "from": "system",
+          "printable_height": "250",
+          "printable_area": [
+            "0x0",
+            "256x0",
+            "256x256",
+            "0x256"
+          ],
+          "layer_change_gcode": "G92 E0" 
+        }
       },
     }),
   ])

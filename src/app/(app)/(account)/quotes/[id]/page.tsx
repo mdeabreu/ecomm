@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { Price } from '@/components/Price'
 import { QuoteStatus as QuoteStatusBadge } from '@/components/QuoteStatus'
 import { QuoteSummaryCard } from '@/components/quote/wizard/QuoteSummaryCard'
+import { QuoteAutoRefresh } from '@/components/quote/QuoteAutoRefresh'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { extractSwatches } from '@/lib/quotes/utils'
@@ -51,8 +52,29 @@ const statusCopy: Record<
   },
 }
 
+const formatDuration = (durationSeconds?: number | null): string | null => {
+  if (typeof durationSeconds !== 'number' || !Number.isFinite(durationSeconds)) {
+    return null
+  }
+
+  const total = Math.max(0, Math.floor(durationSeconds))
+  const hours = Math.floor(total / 3600)
+  const minutes = Math.floor((total % 3600) / 60)
+  const seconds = total % 60
+
+  const parts = []
+  if (hours) parts.push(`${hours}h`)
+  if (minutes) parts.push(`${minutes}m`)
+  if (!hours && !minutes) {
+    parts.push(`${seconds}s`)
+  }
+
+  return parts.join(' ')
+}
+
 type QuoteItemDetail = {
   colour: Colour | null
+  duration?: number | null
   key: string
   material: Material | null
   model: Model | null
@@ -199,6 +221,8 @@ export default async function Quote({ params, searchParams }: PageProps) {
           : 1
       const grams =
         typeof item.grams === 'number' && Number.isFinite(item.grams) ? item.grams : null
+      const duration =
+        typeof item.duration === 'number' && Number.isFinite(item.duration) ? item.duration : null
 
       const keyCandidate =
         typeof item.id === 'string' || typeof item.id === 'number'
@@ -207,6 +231,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
 
       return {
         colour,
+        duration,
         key: keyCandidate,
         material,
         model,
@@ -228,9 +253,19 @@ export default async function Quote({ params, searchParams }: PageProps) {
         ? item.model.filesize
         : undefined
     const weightGrams = typeof item.grams === 'number' ? item.grams : undefined
-    const uploadedAt = item.model?.createdAt
+    const durationSeconds = typeof item.duration === 'number' ? item.duration : undefined
     const colourSwatches = extractSwatches(item.colour?.swatches ?? [])
     const lineAmount = typeof item.lineAmount === 'number' ? item.lineAmount : undefined
+    const printStats: string[] = []
+
+    if (typeof weightGrams === 'number') {
+      printStats.push(`${weightGrams.toFixed(1)} g`)
+    }
+
+    const formattedDuration = formatDuration(durationSeconds)
+    if (formattedDuration) {
+      printStats.push(formattedDuration)
+    }
 
     return {
       attributes: [
@@ -270,6 +305,11 @@ export default async function Quote({ params, searchParams }: PageProps) {
         ) : undefined,
       name: modelFilename,
       size: fileSize,
+      extra: printStats.length ? (
+        <p className="text-xs text-muted-foreground">
+          Print estimate: {printStats.join(' · ')}
+        </p>
+      ) : undefined,
       weightGrams,
     }
   })
@@ -278,6 +318,7 @@ export default async function Quote({ params, searchParams }: PageProps) {
   const lookupEmail = normalizedLookupEmailOuter
   const viewerEmail =
     lookupEmail || (typeof quote.customerEmail === 'string' ? quote.customerEmail : '')
+  const missingPrintMetrics = items.some((item) => item.grams == null || item.duration == null)
 
   return (
     <div className="container py-12">
@@ -342,6 +383,15 @@ export default async function Quote({ params, searchParams }: PageProps) {
               </div>
             ) : null}
           </div>
+
+          {missingPrintMetrics ? (
+            <QuoteAutoRefresh
+              className="text-xs text-muted-foreground"
+              email={viewerEmail || undefined}
+              quoteId={quote.id}
+              shouldPoll={missingPrintMetrics}
+            />
+          ) : null}
 
           {!user && viewerEmail ? (
             <div className="rounded-md bg-muted/20 p-4 text-sm text-muted-foreground">

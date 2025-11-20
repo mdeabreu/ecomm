@@ -9,7 +9,9 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { QuoteSummaryCard } from '@/components/quote/wizard/QuoteSummaryCard'
+import { QuoteReadinessPoller } from '@/components/quote/QuoteReadinessPoller'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 type QuoteWizardSuccessStateProps = {
@@ -23,6 +25,12 @@ export const QuoteWizardSuccessState: React.FC<QuoteWizardSuccessStateProps> = (
   isAuthenticated,
   onStartAnother,
 }) => {
+  const router = useRouter()
+  const detailUrl =
+    completedQuote.email
+      ? `/quotes/${completedQuote.id}?email=${encodeURIComponent(completedQuote.email)}`
+      : `/quotes/${completedQuote.id}`
+
   return (
     <Card>
       <CardHeader>
@@ -83,6 +91,17 @@ export const QuoteWizardSuccessState: React.FC<QuoteWizardSuccessStateProps> = (
           notes={completedQuote.notes}
           title="Models & selections"
         />
+
+        <QuoteReadinessPoller
+          email={completedQuote.email ?? undefined}
+          onReady={() => router.push(detailUrl)}
+          quoteId={completedQuote.id}
+        >
+          <div className="rounded-md bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+            Slicing is running in the background. We’ll forward you to the quote details as soon as
+            weight and duration are available.
+          </div>
+        </QuoteReadinessPoller>
       </CardContent>
       <CardFooter className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="text-sm text-muted-foreground">
@@ -92,15 +111,7 @@ export const QuoteWizardSuccessState: React.FC<QuoteWizardSuccessStateProps> = (
         </div>
         <div className="flex flex-wrap gap-3">
           <Button asChild variant="outline">
-            <Link
-              href={
-                completedQuote.email
-                  ? `/quotes/${completedQuote.id}?email=${encodeURIComponent(completedQuote.email)}`
-                  : `/quotes/${completedQuote.id}`
-              }
-            >
-              View quote status
-            </Link>
+            <Link href={detailUrl}>View quote status</Link>
           </Button>
           <Button onClick={onStartAnother} variant="default">
             Start another quote
