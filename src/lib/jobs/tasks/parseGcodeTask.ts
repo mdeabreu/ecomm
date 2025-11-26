@@ -38,7 +38,7 @@ const parseDurationToSeconds = (raw: string): number | undefined => {
 export const parseGcodeTask: TaskHandler<'parseGcode'> = async ({ req, input }) => {
   const gcodePath = input?.gcodePath
   const gcodeId = input?.gcodeId
-  const slicerOutput = input?.slicerOutput
+  const slicerOutput = (input as { slicerOutput?: string | null } | undefined)?.slicerOutput
 
   if (!gcodeId) {
     throw new Error('parseGcode: gcodeId is required')

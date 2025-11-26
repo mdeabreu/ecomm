@@ -11,7 +11,8 @@ type Props = {
 
 export const QuoteItem: React.FC<Props> = ({ quote }) => {
   const itemsLabel = quote.items?.length === 1 ? 'Model' : 'Models'
-  const hasAmount = typeof quote.amount === 'number'
+  const amount = typeof quote.amount === 'number' ? quote.amount : undefined
+  const hasAmount = amount !== undefined
 
   return (
     <div className="bg-card border rounded-lg px-4 py-2 md:px-6 md:py-4 flex flex-col sm:flex-row gap-12 sm:items-center sm:justify-between">
@@ -35,7 +36,11 @@ export const QuoteItem: React.FC<Props> = ({ quote }) => {
           {hasAmount && (
             <>
               <span>•</span>
-              <Price as="span" amount={quote.amount} currencyCode={quote.currency ?? undefined} />
+              <Price
+                as="span"
+                amount={amount}
+                currencyCode={quote.currency ?? undefined}
+              />
             </>
           )}
         </p>

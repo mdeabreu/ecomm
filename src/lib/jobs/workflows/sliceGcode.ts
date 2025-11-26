@@ -1,5 +1,6 @@
 import type { WorkflowHandler } from 'payload'
 
+import { resolveRelationID } from '@/lib/quotes/relations'
 
 // Simple workflow that chains the stub tasks; will be expanded with real logic later.
 export const sliceGcodeWorkflow: WorkflowHandler<'sliceGcode'> = async ({req, job, tasks }) => {
@@ -25,12 +26,14 @@ export const sliceGcodeWorkflow: WorkflowHandler<'sliceGcode'> = async ({req, jo
     id: job.input.gcodeId,
     depth: 0,
   })
+  const quoteId = resolveRelationID(gcode.quote)
+  if (!quoteId) {
+    throw new Error('sliceGcode: gcode is missing quote reference')
+  }
 
   await req.payload.update({
     collection: 'quotes',
-    where: {
-      id: gcode.quote.id,
-    },
+    id: quoteId,
     data: {},
     depth: 0,
     context: {

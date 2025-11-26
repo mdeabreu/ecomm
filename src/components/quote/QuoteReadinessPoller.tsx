@@ -8,7 +8,7 @@ type QuoteReadinessPollerProps = {
   email?: string | null
   onReady: () => void
   pollIntervalMs?: number
-  quoteId: string
+  quoteId: string | number
   /**
    * Skip polling when false; useful when the metrics already exist on initial render.
    */

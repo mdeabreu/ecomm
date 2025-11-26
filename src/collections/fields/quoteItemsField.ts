@@ -1,4 +1,4 @@
-import type { Field } from 'payload'
+import type { Field, Where } from 'payload'
 
 import { amountField } from '@payloadcms/plugin-ecommerce'
 
@@ -65,10 +65,15 @@ export const quoteItemsField = (): Field => ({
             width: '33%',
           },
           filterOptions: ({ siblingData }) => {
-            const colour = resolveRelationID(siblingData?.colour)
-            const filament = resolveRelationID(siblingData?.filament)
+            const { colour, filament } = (siblingData ?? {}) as {
+              colour?: unknown
+              filament?: unknown
+            }
 
-            const constraints = [
+            const resolvedColour = resolveRelationID(colour)
+            const resolvedFilament = resolveRelationID(filament)
+
+            const constraints: Where[] = [
               {
                 'filaments.active': {
                   equals: true,
@@ -76,18 +81,18 @@ export const quoteItemsField = (): Field => ({
               }
             ]
 
-            if (filament) {
+            if (resolvedFilament) {
               constraints.push({
                 filaments: {
-                  contains: filament,
+                  contains: resolvedFilament,
                 }
               })
             }
 
-            if (colour) {
+            if (resolvedColour) {
               constraints.push({
                 'filaments.colour': {
-                  equals: colour,
+                  equals: resolvedColour,
                 }
               })
             }
@@ -106,10 +111,15 @@ export const quoteItemsField = (): Field => ({
             width: '33%',
           },
           filterOptions: ({ siblingData }) => {
-            const material = resolveRelationID(siblingData?.material)
-            const filament = resolveRelationID(siblingData?.filament)
+            const { material, filament } = (siblingData ?? {}) as {
+              material?: unknown
+              filament?: unknown
+            }
 
-            const constraints = [
+            const resolvedMaterial = resolveRelationID(material)
+            const resolvedFilament = resolveRelationID(filament)
+
+            const constraints: Where[] = [
               {
                 'filaments.active': {
                   equals: true,
@@ -117,18 +127,18 @@ export const quoteItemsField = (): Field => ({
               }
             ]
 
-            if (filament) {
+            if (resolvedFilament) {
               constraints.push({
                 filaments: {
-                  contains: filament,
+                  contains: resolvedFilament,
                 }
               })
             }
 
-            if (material) {
+            if (resolvedMaterial) {
               constraints.push({
                 'filaments.material': {
-                  equals: material,
+                  equals: resolvedMaterial,
                 }
               })
             }
@@ -168,10 +178,15 @@ export const quoteItemsField = (): Field => ({
             width: '50%',
           },
           filterOptions: ({ siblingData }) => {
-            const material = resolveRelationID(siblingData?.material)
-            const colour = resolveRelationID(siblingData?.colour)
+            const { material, colour } = (siblingData ?? {}) as {
+              material?: unknown
+              colour?: unknown
+            }
 
-            const constraints = [
+            const resolvedMaterial = resolveRelationID(material)
+            const resolvedColour = resolveRelationID(colour)
+
+            const constraints: Where[] = [
               {
                 active: {
                   equals: true,
@@ -179,18 +194,18 @@ export const quoteItemsField = (): Field => ({
               },
             ]
 
-            if (material) {
+            if (resolvedMaterial) {
               constraints.push({
                 material: {
-                  equals: material,
+                  equals: resolvedMaterial,
                 },
               })
             }
 
-            if (colour) {
+            if (resolvedColour) {
               constraints.push({
                 colour: {
-                  equals: colour,
+                  equals: resolvedColour,
                 },
               })
             }

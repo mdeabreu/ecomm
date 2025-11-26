@@ -8,23 +8,24 @@ import React from 'react'
 
 export function DeleteItemButton({ item }: { item: CartItem }) {
   const { removeItem } = useCart()
-  const itemId = item.id
+  const resolvedItemId = typeof item.id === 'string' ? Number(item.id) : item.id
+  const canRemove = Number.isFinite(resolvedItemId)
 
   return (
     <form>
       <button
-        aria-disabled={!itemId}
+        aria-disabled={!canRemove}
         aria-label="Remove cart item"
         className={clsx(
           'ease hover:cursor-pointer flex h-[17px] w-[17px] items-center justify-center rounded-full bg-neutral-500 transition-all duration-200',
           {
-            'cursor-not-allowed px-0': !itemId,
+            'cursor-not-allowed px-0': !canRemove,
           },
         )}
-        disabled={!itemId}
+        disabled={!canRemove}
         onClick={(e: React.FormEvent<HTMLButtonElement>) => {
           e.preventDefault()
-          if (itemId) removeItem(itemId)
+          if (canRemove) removeItem(resolvedItemId as number)
         }}
         type="button"
       >

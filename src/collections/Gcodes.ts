@@ -16,10 +16,9 @@ const queueSliceWorkflow: CollectionAfterChangeHook = async ({ doc, operation, r
       queue: 'slicing',
     })
 
-    req.payload.jobs.runByID({id: job.id})
-    
+    req.payload.jobs.runByID({ id: job.id })
   } catch (error) {
-    req.payload.logger.error('Failed to queue slicing workflow', error)
+    req.payload.logger.error({ error }, 'Failed to queue slicing workflow')
   }
 
   return doc

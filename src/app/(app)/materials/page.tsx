@@ -40,7 +40,7 @@ export default async function MaterialsPage() {
             <MaterialCard
               key={material.id}
               description={material.description}
-              image={material.image}
+              image={typeof material.image === 'number' ? undefined : material.image}
               name={material.name}
               pricePerGram={
                 typeof material.pricePerGram === 'number' ? material.pricePerGram : null

@@ -81,16 +81,13 @@ export const runSlicerTask: TaskHandler<'runSlicer'> = async ({ input, req }) =>
     throw new Error(`runSlicer: failed to execute OrcaSlicer: ${message}`)
   }
 
-  let slicedGcodePath: string | undefined
-  try {
-    const files = await fs.readdir(outputDir)
-    const gcodeFile = files.find((file) => file.toLowerCase().endsWith('.gcode'))
-    if (gcodeFile) {
-      slicedGcodePath = path.join(outputDir, gcodeFile)
-    }
-  } catch {
-    // ignore; downstream can handle missing file
+  const files = await fs.readdir(outputDir)
+  const gcodeFile = files.find((file) => file.toLowerCase().endsWith('.gcode'))
+  if (!gcodeFile) {
+    throw new Error('runSlicer: sliced G-code not found in output directory')
   }
+
+  const slicedGcodePath = path.join(outputDir, gcodeFile)
 
   return {
     output: {

@@ -40,7 +40,7 @@ export default async function ProcessesPage() {
             <ProcessCard
               key={process.id}
               description={process.description}
-              image={process.image}
+              image={typeof process.image === 'number' ? undefined : process.image}
               name={process.name}
             />
           ))}

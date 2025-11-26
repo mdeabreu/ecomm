@@ -1,5 +1,6 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
+import type { Quote } from '@/payload-types'
 import { resolveRelationID } from '@/lib/quotes/relations'
 
 type GcodeKey = {
@@ -19,7 +20,7 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
   operation,
   req,
 }) => {
-  if (!doc || operation === 'delete' || req.context?.skipCreateQuoteGcodes) {
+  if (!doc || req.context?.skipCreateQuoteGcodes) {
     return doc
   }
 
@@ -54,6 +55,20 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
   const comboToGcodeID = new Map<string, number | string>()
 
   for (const [comboKey, combo] of combinations.entries()) {
+    const modelId = Number(combo.model)
+    const materialId = Number(combo.material)
+    const processId = Number(combo.process)
+    const filamentId = Number(combo.filament)
+    const machineId = Number(combo.machine)
+
+    if (
+      [modelId, materialId, processId, filamentId, machineId].some(
+        (value) => !Number.isFinite(value),
+      )
+    ) {
+      continue
+    }
+
     const existing = await req.payload.find({
       collection: 'gcodes',
       depth: 0,
@@ -67,27 +82,27 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
           },
           {
             model: {
-              equals: combo.model,
+              equals: modelId,
             },
           },
           {
             material: {
-              equals: combo.material,
+              equals: materialId,
             },
           },
           {
             process: {
-              equals: combo.process,
+              equals: processId,
             },
           },
           {
             filament: {
-              equals: combo.filament,
+              equals: filamentId,
             },
           },
           {
             machine: {
-              equals: combo.machine,
+              equals: machineId,
             },
           },
         ],
@@ -104,11 +119,11 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
       depth: 0,
       data: {
         quote: quoteID,
-        model: combo.model,
-        material: combo.material,
-        process: combo.process,
-        filament: combo.filament,
-        machine: combo.machine,
+        model: modelId,
+        material: materialId,
+        process: processId,
+        filament: filamentId,
+        machine: machineId,
       },
     })
 
@@ -120,7 +135,7 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
   }
 
   let itemsUpdated = false
-  const updatedItems = doc.items.map((item) => {
+  const updatedItems = doc.items.map((item: Quote['items'][number]) => {
     if (!item) return item
 
     const model = resolveRelationID(item.model)

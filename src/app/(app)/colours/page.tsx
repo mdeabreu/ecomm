@@ -42,7 +42,7 @@ export default async function ColoursPage() {
               key={colour.id}
               description={colour.description}
               finish={colour.finish}
-              image={colour.image}
+              image={typeof colour.image === 'number' ? undefined : colour.image}
               name={colour.name}
               swatches={colour.swatches ?? []}
               type={colour.type}

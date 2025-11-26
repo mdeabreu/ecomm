@@ -7,7 +7,7 @@ import React from 'react'
 type QuoteAutoRefreshProps = {
   className?: string
   email?: string | null
-  quoteId: string
+  quoteId: string | number
   shouldPoll?: boolean
 }
 

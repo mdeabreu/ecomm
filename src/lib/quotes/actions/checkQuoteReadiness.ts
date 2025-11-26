@@ -11,7 +11,7 @@ const isNumber = (value: unknown): value is number =>
 
 type CheckQuoteReadinessArgs = {
   email?: string | null
-  quoteId: string
+  quoteId: string | number
 }
 
 type CheckQuoteReadinessResult = {

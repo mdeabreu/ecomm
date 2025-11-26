@@ -19,7 +19,7 @@ type QuoteWizardContextValue = {
   contactEmail: string
   emailHasError: boolean
   emailIsValid: boolean
-  fileInputRef: RefObject<HTMLInputElement>
+  fileInputRef: RefObject<HTMLInputElement | null>
   files: SelectedFile[]
   getAvailableColoursForMaterial: (materialId: string | null) => ColourOption[]
   getPreferenceForFile: (fileId: string) => FilePreference

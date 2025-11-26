@@ -3,8 +3,8 @@ import type { Metadata } from 'next'
 
 import { Price } from '@/components/Price'
 import { QuoteStatus as QuoteStatusBadge } from '@/components/QuoteStatus'
-import { QuoteSummaryCard } from '@/components/quote/wizard/QuoteSummaryCard'
 import { QuoteAutoRefresh } from '@/components/quote/QuoteAutoRefresh'
+import { QuoteSummaryCard } from '@/components/quote/wizard/QuoteSummaryCard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { extractSwatches } from '@/lib/quotes/utils'
@@ -107,9 +107,6 @@ export default async function Quote({ params, searchParams }: PageProps) {
                 email: {
                   equals: normalizedLookupEmailOuter,
                 },
-              },
-              select: {
-                id: true,
               },
             })
           ).docs

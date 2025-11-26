@@ -8,9 +8,11 @@ import React, { useMemo } from 'react'
 
 export function EditItemQuantityButton({ type, item }: { item: CartItem; type: 'minus' | 'plus' }) {
   const { decrementItem, incrementItem } = useCart()
+  const resolvedItemId = typeof item.id === 'string' ? Number(item.id) : item.id
+  const hasItemId = Number.isFinite(resolvedItemId)
 
   const disabled = useMemo(() => {
-    if (!item.id) return true
+    if (!hasItemId) return true
 
     const target =
       item.variant && typeof item.variant === 'object'
@@ -31,7 +33,7 @@ export function EditItemQuantityButton({ type, item }: { item: CartItem; type: '
     }
 
     return false
-  }, [item, type])
+  }, [hasItemId, item, type])
 
   return (
     <form>
@@ -49,11 +51,11 @@ export function EditItemQuantityButton({ type, item }: { item: CartItem; type: '
         onClick={(e: React.FormEvent<HTMLButtonElement>) => {
           e.preventDefault()
 
-          if (item.id) {
+          if (hasItemId) {
             if (type === 'plus') {
-              incrementItem(item.id)
+              incrementItem(resolvedItemId as number)
             } else {
-              decrementItem(item.id)
+              decrementItem(resolvedItemId as number)
             }
           }
         }}

@@ -85,7 +85,7 @@ export const Colours: CollectionConfig = {
               admin: {
                 description: 'Hex value including #, e.g. #FFAA00',
               },
-              validate: (value) => {
+              validate: (value: unknown) => {
                 if (typeof value !== 'string') return 'Provide a valid hex code'
                 return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)
                   ? true

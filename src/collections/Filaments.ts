@@ -118,8 +118,8 @@ export const Filaments: CollectionConfig = {
                   name: 'url',
                   type: 'text',
                   required: true,
-                  validate: (value) => {
-                    if (!value) return 'URL is required'
+                  validate: (value: unknown) => {
+                    if (typeof value !== 'string' || !value) return 'URL is required'
                     try {
                       new URL(value)
                       return true

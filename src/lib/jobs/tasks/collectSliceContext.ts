@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import type { TaskHandler } from 'payload'
 
+import type { TaskCollectSliceContext } from '@/payload-types'
 import { resolveRelationID } from '@/lib/quotes/relations'
 
 
