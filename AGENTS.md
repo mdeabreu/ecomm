@@ -7,8 +7,10 @@ The app uses the Next.js App Router under `src/app`; customer-facing routes resi
 - `pnpm dev` starts the app with hot reload at `localhost:3000`.
 - `pnpm lint` / `pnpm lint:fix` run ESLint and auto-fix supported rules; do this before PRs.
 - `pnpm generate:types` and `pnpm generate:importmap` regenerate Payload artifacts after schema edits.
-- `pnpm test:int` executes Vitest integration specs. Run these locally before pushing.
-- Hold off on `pnpm build`, `pnpm start`, `pnpm test:e2e`, and the umbrella `pnpm test` until the build pipeline is greenlit; rely on the dev server and integration tests for now.
+- `pnpm build` is now greenlit; use it to verify the app still builds cleanly.
+- `pnpm payload seed` can be run to ensure backend seeding continues to work.
+- `pnpm test:int` executes Vitest integration specs—coverage is incomplete, so add or extend tests where it makes sense and run them before pushing.
+- Hold off on `pnpm start`, `pnpm test:e2e`, and the umbrella `pnpm test` until the build pipeline is greenlit; rely on the dev server, integration tests, and build/seed checks for now.
 
 ## Coding Style & Naming Conventions
 We rely on TypeScript, React server components by default, and Tailwind for styling. Prettier (with the Tailwind plugin) plus ESLint enforce two-space indentation, trailing commas, and deterministic class ordering; format through your editor or `pnpm lint:fix`. Use PascalCase for components (`ProductCard.tsx`), camelCase for utilities (`formatPrice.ts`), and co-locate route files with their segments to maintain the App Router structure.
