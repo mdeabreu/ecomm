@@ -119,9 +119,6 @@ export const seed = async ({
         slug: global,
         data,
         depth: 0,
-        context: {
-          disableRevalidate: true,
-        },
       })
     }),
   )
@@ -657,9 +654,6 @@ export const seed = async ({
         contentImage: imageHero,
         metaImage: imageHat,
       }),
-      context: {
-        disableRevalidate: true,
-      },
     }),
     payload.create({
       collection: 'pages',
@@ -667,9 +661,6 @@ export const seed = async ({
       data: contactPageData({
         contactForm: contactForm,
       }),
-      context: {
-        disableRevalidate: true,
-      },
     }),
   ])
 
