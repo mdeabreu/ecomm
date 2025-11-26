@@ -57,6 +57,10 @@ export default buildConfig({
       scriptPath: path.resolve(dirname, '../scripts/json-merge.ts'),
       key: 'json-merge',
     },
+    {
+      scriptPath: path.resolve(dirname, '../scripts/seed.ts'),
+      key: 'seed',
+    },
   ],
   collections: [
     Users,

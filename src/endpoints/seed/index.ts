@@ -4,7 +4,6 @@ import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
-import { ecommerceCurrenciesConfig } from '@/config/currencies'
 import { Address, Transaction, VariantOption } from '@/payload-types'
 import { contactFormData } from './contact-form'
 import { contactPageData } from './contact-page'
@@ -522,7 +521,7 @@ export const seed = async ({
         },
       ],
       amount: 0,
-      currency: ecommerceCurrenciesConfig.defaultCurrency,
+      currency: 'USD',
       status: 'new',
     },
   })
@@ -658,6 +657,9 @@ export const seed = async ({
         contentImage: imageHero,
         metaImage: imageHat,
       }),
+      context: {
+        disableRevalidate: true,
+      },
     }),
     payload.create({
       collection: 'pages',
@@ -665,6 +667,9 @@ export const seed = async ({
       data: contactPageData({
         contactForm: contactForm,
       }),
+      context: {
+        disableRevalidate: true,
+      },
     }),
   ])
 
