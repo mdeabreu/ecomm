@@ -1,7 +1,7 @@
 import type { CollectionAfterChangeHook } from 'payload'
 
-import type { Quote } from '@/payload-types'
 import { resolveRelationID } from '@/lib/quotes/relations'
+import type { Quote } from '@/payload-types'
 
 type GcodeKey = {
   filament: number | string
@@ -118,6 +118,7 @@ export const createQuoteGcodes: CollectionAfterChangeHook = async ({
       collection: 'gcodes',
       depth: 0,
       data: {
+        status: 'queued',
         quote: quoteID,
         model: modelId,
         material: materialId,

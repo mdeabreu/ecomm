@@ -108,7 +108,7 @@ export const Quotes: CollectionConfig = {
               on: 'quote',
               admin: {
                 allowCreate: false,
-                defaultColumns: ['model', 'material', 'process', 'filament', 'machine'],
+                defaultColumns: ['status', 'model', 'material', 'process', 'filament', 'machine'],
               },
             },
           ],

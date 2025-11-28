@@ -1,6 +1,7 @@
 import type { CollectionAfterChangeHook, CollectionConfig } from 'payload'
 
 import { adminOnly } from '@/access/adminOnly'
+import { gcodeStatusOptions } from '@/collections/constants/gcodeStatusOptions'
 
 const queueSliceWorkflow: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   if (!doc || operation !== 'create' || req.context?.skipQueueSliceWorkflow) {
@@ -39,9 +40,39 @@ export const Gcodes: CollectionConfig = {
   admin: {
     group: 'Jobs',
     useAsTitle: 'id',
-    defaultColumns: ['quote', 'model', 'material', 'process', 'filament', 'machine', 'estimatedWeight', 'estimatedDuration'],
+    defaultColumns: [
+      'status',
+      'quote',
+      'model',
+      'material',
+      'process',
+      'filament',
+      'machine',
+      'estimatedWeight',
+      'estimatedDuration',
+    ],
   },
   fields: [
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'queued',
+      options: gcodeStatusOptions,
+      admin: {
+        position: 'sidebar',
+      },
+    },
+    {
+      name: 'error',
+      label: 'Error details',
+      type: 'textarea',
+      admin: {
+        description: 'Set when the slicing workflow fails.',
+        readOnly: true,
+        position: 'sidebar',
+      },
+    },
     {
       type: 'row',
       fields: [

@@ -1239,6 +1239,11 @@ export interface Process {
  */
 export interface Gcode {
   id: number;
+  status: 'queued' | 'collecting-context' | 'slicing' | 'parsing' | 'completed' | 'failed';
+  /**
+   * Set when the slicing workflow fails.
+   */
+  error?: string | null;
   quote: number | Quote;
   model: number | Model;
   material: number | Material;
@@ -1287,6 +1292,7 @@ export interface Quote {
     filament?: (number | null) | Filament;
     machine?: (number | null) | Machine;
     gcode?: (number | null) | Gcode;
+    gcodeStatus?: ('queued' | 'collecting-context' | 'slicing' | 'parsing' | 'completed' | 'failed') | null;
     grams?: number | null;
     duration?: number | null;
     lineAmount?: number | null;
@@ -1865,6 +1871,8 @@ export interface ProcessesSelect<T extends boolean = true> {
  * via the `definition` "gcodes_select".
  */
 export interface GcodesSelect<T extends boolean = true> {
+  status?: T;
+  error?: T;
   quote?: T;
   model?: T;
   material?: T;
@@ -1961,6 +1969,7 @@ export interface QuotesSelect<T extends boolean = true> {
         filament?: T;
         machine?: T;
         gcode?: T;
+        gcodeStatus?: T;
         grams?: T;
         duration?: T;
         lineAmount?: T;

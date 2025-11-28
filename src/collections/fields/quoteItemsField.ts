@@ -3,6 +3,7 @@ import type { Field, Where } from 'payload'
 import { amountField } from '@payloadcms/plugin-ecommerce'
 
 import { ecommerceCurrenciesConfig } from '@/config/currencies'
+import { gcodeStatusOptions } from '@/collections/constants/gcodeStatusOptions'
 import { resolveRelationID } from '@/lib/quotes/relations'
 
 export const quoteItemsField = (): Field => ({
@@ -241,13 +242,54 @@ export const quoteItemsField = (): Field => ({
           relationTo: 'gcodes',
           admin: {
             readOnly: true,
-            width: '33%',
+            width: '50%',
           },
         },
         {
+          name: 'gcodeStatus',
+          label: 'Status',
+          type: 'select',
+          virtual: true,
+          options: gcodeStatusOptions,
+          hooks: {
+            afterRead: [async ({ siblingData, req }) => {
+              const gcodeId = resolveRelationID(siblingData?.gcode)
+
+              if (!gcodeId) {
+                return null
+              }
+
+              try {
+                const gcode = await req.payload.findByID({
+                  collection: 'gcodes',
+                  id: gcodeId,
+                  depth: 0,
+                })
+
+                if (typeof gcode.status === 'string') {
+                  return gcode.status
+                }
+              } catch {
+                // ignore and fall back to null
+              }
+
+              return null
+            }],
+          },
+          admin: {
+            width: '50%',
+            readOnly: true,
+          },
+        },
+      ],
+    },
+    {
+      type: 'row',
+      fields: [
+        {
           name: 'grams',
           type: 'number',
-          min: 0,
+          virtual: true,
           hooks: {
             afterRead: [async ({ siblingData, req, value }) => {
               const gcodeId = resolveRelationID(siblingData?.gcode)
@@ -274,14 +316,14 @@ export const quoteItemsField = (): Field => ({
             }],
           },
           admin: {
-            width: '33%',
+            width: '50%',
             readOnly: true,
           },
         },
         {
           name: 'duration',
           type: 'number',
-          min: 0,
+          virtual: true,
           hooks: {
             afterRead: [async ({ siblingData, req, value }) => {
               const gcodeId = resolveRelationID(siblingData?.gcode)
@@ -308,7 +350,7 @@ export const quoteItemsField = (): Field => ({
             }],
           },
           admin: {
-            width: '34%',
+            width: '50%',
             readOnly: true,
           },
         },
