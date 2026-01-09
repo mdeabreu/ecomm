@@ -194,9 +194,14 @@ export default buildConfig({
         ],
         outputSchema: [
           {
-            name: 'gcodePath',
-            type: 'text',
+            name: 'gcodePaths',
+            type: 'json',
             required: true,
+          },
+          {
+            name: 'slicerOutput',
+            type: 'text',
+            required: false,
           },
         ],
         handler: runSlicerTask,
@@ -205,13 +210,30 @@ export default buildConfig({
         slug: 'parseGcode',
         inputSchema: [
           {
+            name: 'gcodePath',
+            type: 'text',
+            required: true,
+          },
+          {
             name: 'gcodeId',
             type: 'text',
             required: true,
           },
           {
-            name: 'gcodePath',
-            type: 'text',
+            name: 'index',
+            type: 'number',
+            required: true,
+          },
+        ],
+        outputSchema: [
+          {
+            name: 'filamentUsedGrams',
+            type: 'number',
+            required: false,
+          },
+          {
+            name: 'estimatedDuration',
+            type: 'number',
             required: false,
           },
         ],

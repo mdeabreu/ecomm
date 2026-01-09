@@ -18,10 +18,10 @@ export const QuoteWizardUploadStep: React.FC = () => {
         <UploadCloudIcon aria-hidden="true" className="size-10 text-muted-foreground" />
         <div className="space-y-1">
           <p className="text-sm font-medium">Drag & drop your files or click to browse</p>
-          <p className="text-xs text-muted-foreground">Supports .stl and .obj up to 200MB each</p>
+          <p className="text-xs text-muted-foreground">Supports .stl and .3mf up to 200MB each</p>
         </div>
         <Input
-          accept=".stl,.obj"
+          accept=".stl,.3mf"
           className="hidden"
           id="model-upload"
           multiple

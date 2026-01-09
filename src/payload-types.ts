@@ -1251,21 +1251,33 @@ export interface Gcode {
   process: number | Process;
   machine: number | Machine;
   /**
-   * Captured from slicer output (grams).
+   * Total across plates (grams).
    */
   estimatedWeight?: number | null;
   /**
-   * Captured from slicer output (seconds).
+   * Total across plates (seconds).
    */
   estimatedDuration?: number | null;
+  slicingCommand?: string | null;
   /**
    * Stdout/stderr emitted by the slicer.
    */
   slicerOutput?: string | null;
-  /**
-   * Captured from slicer output as plain text.
-   */
-  gcode?: string | null;
+  plates?:
+    | {
+        name?: string | null;
+        /**
+         * Per-plate filament estimate (grams).
+         */
+        estimatedWeight?: number | null;
+        /**
+         * Per-plate time estimate (seconds).
+         */
+        estimatedDuration?: number | null;
+        gcode?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1881,8 +1893,17 @@ export interface GcodesSelect<T extends boolean = true> {
   machine?: T;
   estimatedWeight?: T;
   estimatedDuration?: T;
+  slicingCommand?: T;
   slicerOutput?: T;
-  gcode?: T;
+  plates?:
+    | T
+    | {
+        name?: T;
+        estimatedWeight?: T;
+        estimatedDuration?: T;
+        gcode?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2548,7 +2569,16 @@ export interface TaskRunSlicer {
     machineConfigPath?: string | null;
   };
   output: {
-    gcodePath: string;
+    gcodePaths:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+    slicerOutput?: string | null;
   };
 }
 /**
@@ -2557,10 +2587,14 @@ export interface TaskRunSlicer {
  */
 export interface TaskParseGcode {
   input: {
+    gcodePath: string;
     gcodeId: string;
-    gcodePath?: string | null;
+    index: number;
   };
-  output?: unknown;
+  output: {
+    filamentUsedGrams?: number | null;
+    estimatedDuration?: number | null;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

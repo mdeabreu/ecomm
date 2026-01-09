@@ -3,10 +3,20 @@ import type { WorkflowHandler } from 'payload'
 import { resolveRelationID } from '@/lib/quotes/relations'
 
 // Simple workflow that chains the stub tasks; will be expanded with real logic later.
-export const sliceGcodeWorkflow: WorkflowHandler<'sliceGcode'> = async ({req, job, tasks }) => {
+export const sliceGcodeWorkflow: WorkflowHandler<'sliceGcode'> = async ({ req, job, tasks }) => {
   const gcodeId = job.input.gcodeId
   if (!gcodeId) {
     throw new Error('sliceGcode: gcodeId is required')
+  }
+
+  const gcode = await req.payload.findByID({
+    collection: 'gcodes',
+    id: gcodeId,
+    depth: 0,
+  })
+  const quoteId = resolveRelationID(gcode.quote)
+  if (!quoteId) {
+    throw new Error('sliceGcode: gcode is missing quote reference')
   }
 
   const updateStatus = async (
@@ -30,7 +40,9 @@ export const sliceGcodeWorkflow: WorkflowHandler<'sliceGcode'> = async ({req, jo
   try {
     await updateStatus('collecting-context')
 
-    const context = await tasks.collectSliceContext('collect-slice-context', { input: { gcodeId } })
+    const context = await tasks.collectSliceContext('collect-slice-context', {
+      input: { gcodeId },
+    })
 
     await updateStatus('slicing')
 
@@ -43,12 +55,36 @@ export const sliceGcodeWorkflow: WorkflowHandler<'sliceGcode'> = async ({req, jo
 
     await updateStatus('parsing')
 
-    await tasks.parseGcode('parse-gcode', {
-      input: {
-        gcodeId,
-        ...sliced,
-      },
-    })
+    const gcodePaths: string[] = Array.isArray(sliced?.gcodePaths) ? sliced.gcodePaths : []
+
+    if (gcodePaths.length === 0) {
+      throw new Error('sliceGcode: runSlicer returned no gcode paths')
+    }
+
+    if (sliced?.slicerOutput) {
+      await req.payload.update({
+        collection: 'gcodes',
+        id: gcodeId,
+        data: {
+          slicerOutput: sliced.slicerOutput,
+        },
+        depth: 0,
+        context: {
+          skipQueueSliceWorkflow: true,
+        },
+      })
+    }
+
+    for (const [index, gcodePath] of gcodePaths.entries()) {
+      const taskId = `parse-gcode-${index}`
+      await tasks.parseGcode(taskId, {
+        input: {
+          gcodeId,
+          gcodePath,
+          index,
+        },
+      })
+    }
 
     await updateStatus('completed')
   } catch (error) {
@@ -61,16 +97,6 @@ export const sliceGcodeWorkflow: WorkflowHandler<'sliceGcode'> = async ({req, jo
     }
 
     throw error
-  }
-
-  const gcode = await req.payload.findByID({
-    collection: 'gcodes',
-    id: gcodeId,
-    depth: 0,
-  })
-  const quoteId = resolveRelationID(gcode.quote)
-  if (!quoteId) {
-    throw new Error('sliceGcode: gcode is missing quote reference')
   }
 
   await req.payload.update({

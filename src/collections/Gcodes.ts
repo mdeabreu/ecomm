@@ -148,7 +148,7 @@ export const Gcodes: CollectionConfig = {
           min: 0,
           admin: {
             readOnly: true,
-            description: 'Captured from slicer output (grams).',
+            description: 'Total across plates (grams).',
           },
         },
         {
@@ -157,18 +157,25 @@ export const Gcodes: CollectionConfig = {
           min: 0,
           admin: {
             readOnly: true,
-            description: 'Captured from slicer output (seconds).',
+            description: 'Total across plates (seconds).',
           },
         },
       ],
     },
     {
       type: 'collapsible',
-      label: 'Slicer output',
+      label: 'Slicer',
       admin: {
         initCollapsed: true,
       },
       fields: [
+        {
+          name: 'slicingCommand',
+          type: 'textarea',
+          admin: {
+            readOnly: true,
+          },
+        },
         {
           name: 'slicerOutput',
           type: 'textarea',
@@ -178,14 +185,50 @@ export const Gcodes: CollectionConfig = {
           },
         },
         {
-          name: 'gcode',
-          label: 'G-code',
-          type: 'code',
+          name: 'plates',
+          label: 'Plates',
+          type: 'array',
           admin: {
-            readOnly: true,
-            language: 'gcode',
-            description: 'Captured from slicer output as plain text.',
+            initCollapsed: true,
           },
+          fields: [
+            {
+              name: 'name',
+              type: 'text',
+              admin: {
+                readOnly: true,
+              },
+            },
+            {
+              name: 'estimatedWeight',
+              type: 'number',
+              min: 0,
+              admin: {
+                readOnly: true,
+                description: 'Per-plate filament estimate (grams).',
+                width: '50%',
+              },
+            },
+            {
+              name: 'estimatedDuration',
+              type: 'number',
+              min: 0,
+              admin: {
+                readOnly: true,
+                description: 'Per-plate time estimate (seconds).',
+                width: '50%',
+              },
+            },
+            {
+              name: 'gcode',
+              label: 'G-code',
+              type: 'code',
+              admin: {
+                readOnly: true,
+                language: 'gcode',
+              },
+            },
+          ],
         },
       ],
     },

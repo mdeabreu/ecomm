@@ -55,6 +55,10 @@ export const runSlicerTask: TaskHandler<'runSlicer'> = async ({ input, req }) =>
 
   const args = [
     '--info',
+    '--arrange',
+    '1', // Auto arrange
+    '--orient',
+    '1', // Auto orient
     '--slice',
     '0',
     '--load-filaments',
@@ -65,6 +69,19 @@ export const runSlicerTask: TaskHandler<'runSlicer'> = async ({ input, req }) =>
     outputDir,
     modelPath,
   ]
+
+  const commandString = [ORCA_BINARY, ...args.map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg))].join(' ')
+  await req.payload.update({
+    collection: 'gcodes',
+    id: gcodeId,
+    data: {
+      slicingCommand: commandString,
+    },
+    depth: 0,
+    context: {
+      skipQueueSliceWorkflow: true,
+    },
+  })
 
   let slicerOutput = ''
   try {
@@ -82,16 +99,16 @@ export const runSlicerTask: TaskHandler<'runSlicer'> = async ({ input, req }) =>
   }
 
   const files = await fs.readdir(outputDir)
-  const gcodeFile = files.find((file) => file.toLowerCase().endsWith('.gcode'))
-  if (!gcodeFile) {
+  const gcodeFiles = files.filter((file) => file.toLowerCase().endsWith('.gcode'))
+  if (gcodeFiles.length === 0) {
     throw new Error('runSlicer: sliced G-code not found in output directory')
   }
 
-  const slicedGcodePath = path.join(outputDir, gcodeFile)
+  const slicedGcodePaths = gcodeFiles.map((file) => path.join(outputDir, file))
 
   return {
     output: {
-      gcodePath: slicedGcodePath,
+      gcodePaths: slicedGcodePaths,
       slicerOutput,
     },
   }
